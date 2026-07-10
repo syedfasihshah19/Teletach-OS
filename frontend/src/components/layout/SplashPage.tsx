@@ -806,7 +806,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)',
           display: 'flex',
           alignItems: 'center',
-          justify-content: 'center',
+          justifyContent: 'center',
           boxShadow: '0 0 16px rgba(6, 182, 212, 0.4)',
           fontFamily: "'Fira Code', monospace",
           fontWeight: 700,
