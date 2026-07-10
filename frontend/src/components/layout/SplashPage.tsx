@@ -489,7 +489,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           width: 440px;
           height: 380px;
           border-radius: 12px;
-          border: 1px solid rgba(6, 182, 212, 0.2);
+          border: 1px solid rgba(239, 68, 68, 0.2);
           background: rgba(15, 23, 42, 0.3);
           backdrop-filter: blur(12px);
           box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
@@ -511,7 +511,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         }
 
         .hologram-visual-card:hover {
-          border-color: rgba(6, 182, 212, 0.55);
+          border-color: rgba(239, 68, 68, 0.55);
         }
 
         /* Asset background visual */
@@ -534,7 +534,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         .radar-scanner {
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, transparent 50%, rgba(6, 182, 212, 0.15) 50%, transparent 52%);
+          background: linear-gradient(180deg, transparent 50%, rgba(239, 68, 68, 0.18) 50%, transparent 52%);
           background-size: 100% 200%;
           animation: scan-sweep 6s linear infinite;
           pointer-events: none;
@@ -547,7 +547,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           bottom: 24px;
           right: 24px;
           background: rgba(5, 7, 15, 0.85);
-          border: 1px solid rgba(6, 182, 212, 0.3);
+          border: 1px solid rgba(239, 68, 68, 0.35);
           border-radius: 4px;
           padding: 12px 16px;
           width: 170px;
@@ -856,9 +856,28 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         </div>
 
         {/* Right Side: Interactive 3D Perspective Visual Card with Radar Sweeper */}
-        <div className="hero-right">
-          <div className="glow-aura" />
+        <div className="hero-right" style={{ flexDirection: 'column', gap: '16px' }}>
+          <div className="glow-aura" style={{ background: 'radial-gradient(circle, rgba(239, 68, 68, 0.12) 0%, transparent 70%)' }} />
           
+          {/* Team Name badge banner */}
+          <div style={{
+            fontFamily: "'Fira Code', monospace",
+            fontSize: "12px",
+            letterSpacing: "3px",
+            color: "#ef4444",
+            textShadow: "0 0 10px rgba(239, 68, 68, 0.6)",
+            background: "rgba(239, 68, 68, 0.08)",
+            border: "1px solid rgba(239, 68, 68, 0.25)",
+            padding: "6px 20px",
+            borderRadius: "4px",
+            textTransform: "uppercase",
+            fontWeight: 800,
+            animation: "float 6s ease-in-out infinite",
+            animationDelay: "0.2s"
+          }}>
+            DEV_UNIT // REDLINE DEVS
+          </div>
+
           <div 
             ref={cardRef}
             className="hologram-visual-card animate-[float_6s_ease-in-out_infinite]"
@@ -870,16 +889,16 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
             
             {/* Generated Image visual asset */}
             <img 
-              src="/holographic_network_globe.png" 
-              alt="Holographic Globe Network" 
+              src="/redline_devs_logo.png" 
+              alt="REDLINE Devs Team Logo" 
               className="hologram-asset-img"
             />
 
             {/* Corner Bracket Decorations (Cyberpunk UI elements) */}
-            <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-cyan-400/40 pointer-events-none" />
-            <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-cyan-400/40 pointer-events-none" />
-            <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-cyan-400/40 pointer-events-none" />
-            <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-cyan-400/40 pointer-events-none" />
+            <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-red-500/40 pointer-events-none" />
+            <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-red-500/40 pointer-events-none" />
+            <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-red-500/40 pointer-events-none" />
+            <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-red-500/40 pointer-events-none" />
 
             {/* Dynamic Telemetry HUD overlay inside card */}
             <div className="hud-telemetry-panel">
