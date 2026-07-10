@@ -21,6 +21,15 @@ export default function TeleTACWarRoom() {
   const [showTimeline, setShowTimeline] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const loadingIntervalRef = useRef<any>(null);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     incidentApi.list().then(setIncidents).catch(() => {});
@@ -49,9 +58,9 @@ export default function TeleTACWarRoom() {
   const isInvestigated = (inc: Incident) => !!(inc.agent_findings && inc.agent_findings.length > 0);
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 16, height: '100%', minHeight: 0 }}>
+    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '320px 1fr', gap: 16, height: isMobile ? 'auto' : '100%', minHeight: 0 }}>
       {/* Left: Incident List */}
-      <div className="tg-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0 }}>
+      <div className="tg-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0, maxHeight: isMobile ? 320 : undefined }}>
         <div style={{ padding: '12px 14px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', gap: 8 }}>
           <BoltIcon style={{ width: 14, height: 14, color: 'var(--accent-red)' }} />
           <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Incidents</span>
@@ -94,7 +103,7 @@ export default function TeleTACWarRoom() {
       </div>
 
       {/* Right: Investigation Panel */}
-      <div className="tg-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0, minHeight: 0, height: '100%' }}>
+      <div className="tg-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0, minHeight: 0, height: isMobile ? 'auto' : '100%' }}>
         {!selected ? (
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
             <div style={{ textAlign: 'center' }}>

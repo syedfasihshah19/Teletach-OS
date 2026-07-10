@@ -30,6 +30,15 @@ export default function OptimizationStudio() {
   const [loading, setLoading]       = useState(true);
   const [genProgress, setGenProgress] = useState<string[]>([]);
   const animRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const load = async () => {
     try {
@@ -179,7 +188,7 @@ export default function OptimizationStudio() {
       )}
 
       {/* ── Top Row: Chart + Stats ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 300px', gap: 14 }}>
 
         {/* Impact Chart */}
         <div className="tg-card">
@@ -230,10 +239,10 @@ export default function OptimizationStudio() {
       </div>
 
       {/* ── Bottom: List + Detail ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 14, minHeight: 280 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '300px 1fr', gap: 14, minHeight: 280 }}>
 
         {/* List */}
-        <div className="tg-card" style={{ padding: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="tg-card" style={{ padding: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', maxHeight: isMobile ? 320 : undefined }}>
           {/* Sub Tab Bar */}
           <div style={{ borderBottom: '1px solid var(--border-subtle)', display: 'flex', background: 'var(--bg-surface)' }}>
             {(['proposed', 'approved', 'rejected'] as const).map(st => {
@@ -313,7 +322,7 @@ export default function OptimizationStudio() {
         </div>
 
         {/* Detail Panel */}
-        <div className="tg-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="tg-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', height: isMobile ? 'auto' : '100%' }}>
           {!selected ? (
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
               <div style={{ textAlign: 'center' }}>

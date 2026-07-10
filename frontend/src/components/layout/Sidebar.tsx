@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAppStore } from '../../stores/appStore';
 import {
@@ -23,23 +24,41 @@ const nav = [
 export default function Sidebar() {
   const { sidebarCollapsed, toggleSidebar } = useAppStore();
   const location = useLocation();
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      useAppStore.setState({ sidebarCollapsed: true });
+    }
+  };
+
+  const currentCollapsed = isMobile ? false : sidebarCollapsed;
 
   return (
     <aside
       style={{
-        position: 'fixed', top: 0, left: 0, bottom: 0,
-        width: sidebarCollapsed ? 60 : 220,
+        position: 'fixed', top: 0, bottom: 0,
+        left: isMobile ? (sidebarCollapsed ? -220 : 0) : 0,
+        width: isMobile ? 220 : (sidebarCollapsed ? 60 : 220),
         background: 'var(--bg-secondary)',
         borderRight: '1px solid var(--border-subtle)',
         display: 'flex', flexDirection: 'column',
-        transition: 'width 200ms ease-out',
+        transition: 'all 200ms ease-out',
         zIndex: 50,
         overflow: 'hidden',
       }}
     >
       {/* Logo */}
       <div style={{
-        padding: sidebarCollapsed ? '16px 12px' : '16px 16px',
+        padding: currentCollapsed ? '16px 12px' : '16px 16px',
         borderBottom: '1px solid var(--border-subtle)',
         display: 'flex', alignItems: 'center', gap: 10,
         minHeight: 56,
@@ -52,7 +71,7 @@ export default function Sidebar() {
         }}>
           <span style={{ color: 'white', fontWeight: 700, fontSize: 14, fontFamily: 'var(--font-mono)' }}>TG</span>
         </div>
-        {!sidebarCollapsed && (
+        {!currentCollapsed && (
           <span style={{
             fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: 14,
             color: 'var(--text-primary)', whiteSpace: 'nowrap',
@@ -69,9 +88,10 @@ export default function Sidebar() {
           return (
             <NavLink
               key={to} to={to}
+              onClick={handleLinkClick}
               style={{
                 display: 'flex', alignItems: 'center', gap: 10,
-                padding: sidebarCollapsed ? '10px 14px' : '9px 12px',
+                padding: currentCollapsed ? '10px 14px' : '9px 12px',
                 borderRadius: 'var(--radius-sm)',
                 color: active ? 'var(--accent-blue)' : 'var(--text-secondary)',
                 background: active ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
@@ -95,31 +115,33 @@ export default function Sidebar() {
               }}
             >
               <Icon style={{ width: 18, height: 18, flexShrink: 0 }} />
-              {!sidebarCollapsed && label}
+              {!currentCollapsed && label}
             </NavLink>
           );
         })}
       </nav>
 
       {/* Collapse Toggle */}
-      <button
-        onClick={toggleSidebar}
-        style={{
-          padding: '12px', margin: '8px 6px',
-          background: 'transparent', border: '1px solid var(--border-subtle)',
-          borderRadius: 'var(--radius-sm)',
-          color: 'var(--text-muted)', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          transition: 'all 150ms ease-out',
-        }}
-        onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text-muted)'; }}
-        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-subtle)'; }}
-      >
-        {sidebarCollapsed
-          ? <ChevronRightIcon style={{ width: 16, height: 16 }} />
-          : <ChevronLeftIcon style={{ width: 16, height: 16 }} />
-        }
-      </button>
+      {!isMobile && (
+        <button
+          onClick={toggleSidebar}
+          style={{
+            padding: '12px', margin: '8px 6px',
+            background: 'transparent', border: '1px solid var(--border-subtle)',
+            borderRadius: 'var(--radius-sm)',
+            color: 'var(--text-muted)', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: 'all 150ms ease-out',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--text-muted)'; }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-subtle)'; }}
+        >
+          {sidebarCollapsed
+            ? <ChevronRightIcon style={{ width: 16, height: 16 }} />
+            : <ChevronLeftIcon style={{ width: 16, height: 16 }} />
+          }
+        </button>
+      )}
     </aside>
   );
 }

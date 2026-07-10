@@ -8,6 +8,15 @@ import { ShieldExclamationIcon } from '@heroicons/react/24/outline';
 export default function AIOperationsCenter() {
   const [kpis, setKpis] = useState<any[]>([]);
   const [alarms, setAlarms] = useState<any[]>([]);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -39,7 +48,7 @@ export default function AIOperationsCenter() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Live KPI Strip */}
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${kpis.length || 6}, 1fr)`, gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : `repeat(${kpis.length || 6}, 1fr)`, gap: 10 }}>
         {kpis.map(k => {
           const sc = k.status === 'critical' ? 'var(--accent-red)' : k.status === 'warning' ? 'var(--accent-amber)' : 'var(--accent-green)';
           return (
@@ -55,7 +64,7 @@ export default function AIOperationsCenter() {
       </div>
 
       {/* Charts Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 300px', gap: 16 }}>
         {/* Alarms by Region */}
         <div className="tg-card">
           <span className="section-label" style={{ display: 'block', marginBottom: 14 }}>Alarms by Region</span>

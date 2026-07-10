@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { simulationApi } from '../services/api';
 import {
   BarChart, Bar, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -21,6 +21,15 @@ export default function DigitalTwin() {
   const [planQuestion, setPlanQuestion] = useState('');
   const [planning, setPlanning] = useState(false);
   const [planResult, setPlanResult] = useState<any>(null);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const runSim = async () => {
     setRunning(true);
@@ -60,7 +69,7 @@ export default function DigitalTwin() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Top: Scenario Selector */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(5, 1fr)', gap: 10 }}>
         {scenarios.map(s => (
           <div key={s.id}
             onClick={() => setSelectedScenario(s)}
@@ -99,7 +108,7 @@ export default function DigitalTwin() {
       {result && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {/* Charts Row */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
             {/* Bar Chart */}
             <div className="tg-card">
               <span className="section-label" style={{ display: 'block', marginBottom: 14 }}>Before vs After Comparison</span>
@@ -153,7 +162,7 @@ export default function DigitalTwin() {
 
           {/* AI Analysis Section */}
           {(result.ai_analysis || result.risk_assessment || result.rollback_plan) && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
               {/* AI Recommendation */}
               <div className="tg-card" style={{ borderLeft: '3px solid var(--accent-blue)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>

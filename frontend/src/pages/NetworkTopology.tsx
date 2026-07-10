@@ -13,6 +13,15 @@ export default function NetworkTopology() {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     topologyApi.get().then(topo => {
@@ -52,9 +61,9 @@ export default function NetworkTopology() {
   const onNodeClick = useCallback((_: any, node: Node) => setSelectedNode(node.data), []);
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 16, height: 'calc(100vh - 120px)' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 280px', gap: 16, height: isMobile ? 'auto' : 'calc(100vh - 120px)' }}>
       {/* Graph */}
-      <div className="tg-card" style={{ padding: 0, overflow: 'hidden' }}>
+      <div className="tg-card" style={{ padding: 0, overflow: 'hidden', height: isMobile ? 320 : 'auto', minHeight: isMobile ? 320 : undefined }}>
         <ReactFlow nodes={nodes} edges={edges} onNodeClick={onNodeClick}
           fitView style={{ background: '#020617' }}>
           <Background color="#1E293B" gap={20} />
@@ -64,7 +73,7 @@ export default function NetworkTopology() {
       </div>
 
       {/* Node Detail */}
-      <div className="tg-card" style={{ overflow: 'auto' }}>
+      <div className="tg-card" style={{ overflow: 'auto', maxHeight: isMobile ? 360 : undefined }}>
         {selectedNode ? (
           <>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>

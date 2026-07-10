@@ -17,6 +17,15 @@ export default function ExecutiveDashboard() {
   const [alarms, setAlarms] = useState<Alarm[]>([]);
   const [trafficData, setTrafficData] = useState<any[]>([]);
   const [predictions, setPredictions] = useState<any[]>([]);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -57,7 +66,7 @@ export default function ExecutiveDashboard() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Top Row: Health + KPIs */}
-      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '280px 1fr', gap: 16 }}>
         {/* Health Gauge */}
         <div className="tg-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
           <div style={{ position: 'relative', width: 140, height: 140 }}>
@@ -75,7 +84,7 @@ export default function ExecutiveDashboard() {
         </div>
 
         {/* KPI Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: 10 }}>
           {kpis.slice(0, 6).map(k => {
             const Icon = kpiIcons[k.name] || SignalIcon;
             const statusColor = k.status === 'critical' ? 'var(--accent-red)' : k.status === 'warning' ? 'var(--accent-amber)' : 'var(--accent-green)';
@@ -103,7 +112,7 @@ export default function ExecutiveDashboard() {
       </div>
 
       {/* Middle Row: Traffic Chart + Alarms */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 320px', gap: 16 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {/* Traffic Chart */}
           <div className="tg-card">

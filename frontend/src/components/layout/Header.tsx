@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { BellIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { BellIcon, MagnifyingGlassIcon, Bars3Icon } from '@heroicons/react/24/outline';
 import { dashboardApi, searchApi } from '../../services/api';
+import { useAppStore } from '../../stores/appStore';
 
 const titles: Record<string, string> = {
   '/': 'Executive Dashboard',
@@ -32,6 +33,17 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const title = titles[location.pathname] || 'TeleGenesis OS';
+  const { toggleSidebar } = useAppStore();
+
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -118,16 +130,30 @@ export default function Header() {
   return (
     <>
       <header style={{
-        height: 56, padding: '0 24px',
+        height: 56, padding: isMobile ? '0 16px' : '0 24px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         borderBottom: '1px solid var(--border-subtle)',
         background: 'var(--bg-primary)', position: 'sticky', top: 0, zIndex: 40,
       }}>
-        <h1 className="page-title">{title}</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {isMobile && (
+            <button onClick={toggleSidebar} style={{
+              background: 'transparent', border: 'none',
+              color: 'var(--text-secondary)', padding: '4px 8px 4px 0',
+              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+              <Bars3Icon style={{ width: 22, height: 22 }} />
+            </button>
+          )}
+          <h1 className="page-title" style={{ fontSize: isMobile ? 15 : 18 }}>{title}</h1>
+        </div>
+
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button onClick={() => setSearchOpen(true)} style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '6px 12px', borderRadius: 'var(--radius-sm)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            width: isMobile ? 32 : 'auto', height: isMobile ? 32 : 'auto',
+            gap: 6,
+            padding: isMobile ? '0' : '6px 12px', borderRadius: 'var(--radius-sm)',
             background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)',
             color: 'var(--text-muted)', fontSize: 13, cursor: 'pointer',
             fontFamily: 'var(--font-mono)', transition: 'border-color 150ms ease-out',
@@ -136,8 +162,8 @@ export default function Header() {
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-subtle)'; }}
           >
             <MagnifyingGlassIcon style={{ width: 14, height: 14 }} />
-            Search
-            <span style={{ fontSize: 11, padding: '1px 5px', borderRadius: 4, background: 'var(--bg-elevated)', color: 'var(--text-muted)' }}>⌘K</span>
+            {!isMobile && "Search"}
+            {!isMobile && <span style={{ fontSize: 11, padding: '1px 5px', borderRadius: 4, background: 'var(--bg-elevated)', color: 'var(--text-muted)' }}>⌘K</span>}
           </button>
 
           <button onClick={() => setNotifOpen(!notifOpen)} style={{
@@ -158,14 +184,16 @@ export default function Header() {
             )}
           </button>
 
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            padding: '5px 10px', borderRadius: 'var(--radius-sm)',
-            background: 'rgba(34, 197, 94, 0.08)', border: '1px solid rgba(34, 197, 94, 0.2)',
-          }}>
-            <span className="status-dot status-dot-green" />
-            <span style={{ fontSize: 12, color: 'var(--accent-green)', fontFamily: 'var(--font-mono)', fontWeight: 500 }}>Live</span>
-          </div>
+          {!isMobile && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '5px 10px', borderRadius: 'var(--radius-sm)',
+              background: 'rgba(34, 197, 94, 0.08)', border: '1px solid rgba(34, 197, 94, 0.2)',
+            }}>
+              <span className="status-dot status-dot-green" />
+              <span style={{ fontSize: 12, color: 'var(--accent-green)', fontFamily: 'var(--font-mono)', fontWeight: 500 }}>Live</span>
+            </div>
+          )}
         </div>
       </header>
 
@@ -173,10 +201,11 @@ export default function Header() {
       {searchOpen && (
         <div onClick={() => { setSearchOpen(false); setSearchQuery(''); setSearchResults(null); }} style={{
           position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
-          zIndex: 100, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 120,
+          zIndex: 100, display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+          paddingTop: isMobile ? 40 : 120,
         }}>
           <div onClick={e => e.stopPropagation()} style={{
-            width: 520, background: 'var(--bg-secondary)', border: '1px solid var(--border-default)',
+            width: isMobile ? '90%' : 520, background: 'var(--bg-secondary)', border: '1px solid var(--border-default)',
             borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderBottom: '1px solid var(--border-subtle)' }}>

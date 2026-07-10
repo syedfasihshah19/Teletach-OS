@@ -95,6 +95,15 @@ export default function Reports() {
   const [showTypeMenu, setShowTypeMenu] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
   const menuRef  = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const load = useCallback(async () => {
     try {
@@ -289,10 +298,10 @@ export default function Reports() {
       </div>
 
       {/* ── Main 2-panel layout ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 14, flex: 1, minHeight: 0 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '300px 1fr', gap: 14, flex: 1, minHeight: 0 }}>
 
         {/* Left: Report List */}
-        <div className="tg-card" style={{ padding: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div className="tg-card" style={{ padding: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', maxHeight: isMobile ? 320 : undefined }}>
           <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', gap: 6 }}>
             <DocumentTextIcon style={{ width: 13, height: 13, color: 'var(--text-muted)' }} />
             <span className="section-label">Reports — {filtered.length}</span>
@@ -365,7 +374,7 @@ export default function Reports() {
         </div>
 
         {/* Right: Report Detail */}
-        <div className="tg-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0 }}>
+        <div className="tg-card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0, height: isMobile ? 'auto' : '100%' }}>
           {!selected ? (
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
               <div style={{ textAlign: 'center' }}>

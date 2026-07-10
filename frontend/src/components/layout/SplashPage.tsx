@@ -192,7 +192,8 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
       {/* ─── SCIFI STYLES (Clean and decoupled) ─── */}
       <style>{`
         html, body {
-          overflow: hidden !important;
+          overflow-x: hidden !important;
+          overflow-y: auto !important;
           margin: 0 !important;
           padding: 0 !important;
           height: 100% !important;
@@ -214,7 +215,8 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          overflow: hidden;
+          overflow-x: hidden;
+          overflow-y: auto;
           transition: all 850ms cubic-bezier(0.4, 0, 0.2, 1);
           color: #f8fafc;
         }

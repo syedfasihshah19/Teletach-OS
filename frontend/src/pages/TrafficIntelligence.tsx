@@ -6,6 +6,15 @@ import { SignalIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline
 export default function TrafficIntelligence() {
   const [flows, setFlows] = useState<any[]>([]);
   const [congestion, setCongestion] = useState<any[]>([]);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     trafficApi.getFlows().then(setFlows).catch(() => {});
@@ -21,7 +30,7 @@ export default function TrafficIntelligence() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Stats Strip */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: 10 }}>
         {[
           { label: 'Active Flows', value: flows.length, color: 'var(--accent-blue)' },
           { label: 'Avg Utilization', value: `${(flows.reduce((s, f) => s + (f.utilization_pct || 0), 0) / (flows.length || 1)).toFixed(0)}%`, color: 'var(--accent-cyan)' },
@@ -65,7 +74,11 @@ export default function TrafficIntelligence() {
             const sc = c.severity === 'critical' ? 'var(--accent-red)' : c.severity === 'high' ? 'var(--accent-amber)' : 'var(--accent-blue)';
             return (
               <div key={i} style={{
-                display: 'grid', gridTemplateColumns: '80px 100px 80px 1fr', alignItems: 'center', gap: 12,
+                display: isMobile ? 'flex' : 'grid',
+                flexDirection: isMobile ? 'column' : 'row',
+                gridTemplateColumns: isMobile ? undefined : '80px 100px 80px 1fr',
+                alignItems: isMobile ? 'flex-start' : 'center',
+                gap: isMobile ? 6 : 12,
                 padding: '10px 16px', borderBottom: '1px solid var(--border-subtle)',
               }}>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600, color: 'var(--text-primary)' }}>{c.node_id}</span>
