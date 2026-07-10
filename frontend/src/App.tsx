@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AppLayout from './components/layout/AppLayout';
@@ -11,6 +12,7 @@ import NetworkTopology from './pages/NetworkTopology';
 import AgentActivity from './pages/AgentActivity';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
+import SplashPage from './components/layout/SplashPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,8 +21,11 @@ const queryClient = new QueryClient({
 });
 
 export default function App() {
+  const [hasEntered, setHasEntered] = useState(false);
+
   return (
     <QueryClientProvider client={queryClient}>
+      {!hasEntered && <SplashPage onEnter={() => setHasEntered(true)} />}
       <BrowserRouter>
         <Routes>
           <Route element={<AppLayout />}>
