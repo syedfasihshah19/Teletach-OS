@@ -1,0 +1,67 @@
+# TeleGenesis OS Git Ignore List
+
+# Secrets & Environment Configurations (CRITICAL)
+.env
+.env.*
+*.env
+backend/.env
+frontend/.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Databases & Local Storage
+*.db
+*.sqlite
+*.sqlite3
+telegenesis.db
+backend/telegenesis.db
+
+# Agent/Model Execution Caches (Antigravity & Gemini)
+.agent/
+.gemini/
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.cache/
+
+# Frontend Build & Dependencies
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+dist-ssr/
+frontend/dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+active_venv/
+
+# Editor & System Files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.bak
+*.tmp
