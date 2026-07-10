@@ -789,46 +789,43 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
       `}</style>
 
 
-      {/* Floating TeleGenesis OS branding badge */}
-      <div style={{
-        position: 'absolute',
-        top: '32px',
-        left: '64px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        zIndex: 100
-      }}>
-        <div style={{
-          width: '32px',
-          height: '32px',
-          borderRadius: '6px',
-          background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 0 16px rgba(6, 182, 212, 0.4)',
-          fontFamily: "'Fira Code', monospace",
-          fontWeight: 700,
-          fontSize: '12px',
-          color: '#030408'
-        }}>TG</div>
-        <span style={{
-          fontFamily: "'Fira Code', monospace",
-          fontSize: '16px',
-          fontWeight: 700,
-          letterSpacing: '1.5px',
-          textTransform: 'uppercase',
-          color: '#f8fafc'
-        }}>
-          TeleGenesis <span style={{ color: '#06b6d4' }}>OS</span>
-        </span>
-      </div>
-
       {/* ─── Main Columns ─── */}
       <main className="tg-splash-main">
         {/* Left Side: Brand Value pitch */}
         <div className="hero-left">
+          {/* TeleGenesis OS Brand badge inside left column flow */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            marginBottom: '24px'
+          }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '6px',
+              background: 'linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 0 16px rgba(6, 182, 212, 0.4)',
+              fontFamily: "'Fira Code', monospace",
+              fontWeight: 700,
+              fontSize: '12px',
+              color: '#030408'
+            }}>TG</div>
+            <span style={{
+              fontFamily: "'Fira Code', monospace",
+              fontSize: '22px',
+              fontWeight: 800,
+              letterSpacing: '1.5px',
+              textTransform: 'uppercase',
+              color: '#f8fafc'
+            }}>
+              TeleGenesis <span style={{ color: '#06b6d4' }}>OS</span>
+            </span>
+          </div>
+
           <div className="amd-badge">
             <span className="amd-badge-dot" />
             <span className="amd-badge-text">AMD Instinct™ MI300X Optimized</span>
