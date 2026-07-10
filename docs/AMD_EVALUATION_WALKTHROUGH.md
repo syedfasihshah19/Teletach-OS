@@ -16,7 +16,7 @@ graph TD
     Cache <--> Connector[BaseConnector Interface]
     Connector <--> Mock[MockTelecomConnector]
     Connector -.-> Real[Production API: Prometheus / Nokia OSS / Ericsson ENM]
-    BE <--> Orchestrator[Antigravity Agent Engine]
+    BE <--> Orchestrator[TeleGenesis Agent Engine]
     Orchestrator <-->|15-20 Parallel Requests| Fireworks[Fireworks AI Inference API]
     Fireworks <-->|Accelerated by| AMD[AMD Instinct MI300X GPUs]
 ```
@@ -33,14 +33,14 @@ To ensure that all pages (Executive Dashboard, AI Operations Center, TeleTAC War
 
 ---
 
-## 2. How the AI Agents Work (Antigravity Orchestration)
+## 2. How the AI Agents Work (TeleGenesis Multi-Agent System)
 
-When a critical incident occurs (such as a fiber cut or aggregate-switch congestion), TeleGenesis OS does not use a single general-purpose chatbot. Instead, it dispatches a specialized team of **15 AI agents** orchestrated by our **Antigravity Engine**.
+When a critical incident occurs (such as a fiber cut or aggregate-switch congestion), TeleGenesis OS does not use a single general-purpose chatbot. Instead, it dispatches a specialized team of **15 AI agents** orchestrated by our **Agent Engine**.
 
 ```mermaid
 sequenceDiagram
     participant User as Operations Engineer
-    participant Engine as Antigravity Orchestrator
+    participant Engine as Agent Engine
     participant Agents as 15 Specialized Domain Agents
     participant Consensus as Consensus Agent
     participant Report as Reporting Agent

@@ -11,7 +11,7 @@ Built for the **AMD Developer Hackathon Act-II** (Track 3: Unicorn / Open Innova
 ## 🏗️ Architecture
 
 ```
-Users → React UI → FastAPI API → Antigravity Orchestrator → AI Agents (parallel)
+Users → React UI → FastAPI API → AI Agent Engine → AI Agents (parallel)
                                        ↕                        ↕
                                   PostgreSQL              Fireworks AI
                                        ↕                        ↕
@@ -37,7 +37,7 @@ Users → React UI → FastAPI API → Antigravity Orchestrator → AI Agents (p
 
 All agents use **Fireworks AI** for reasoning — zero stubs:
 
-Orchestrator · Performance · Incident Investigation · Alarm Correlation · Log Analysis · Configuration · Security · Customer Experience · Cost Optimization · Energy Optimization · Capacity Planning · Traffic Engineering · Simulation · Knowledge · Consensus · Reporting
+Agent Engine · Performance · Incident Investigation · Alarm Correlation · Log Analysis · Configuration · Security · Customer Experience · Cost Optimization · Energy Optimization · Capacity Planning · Traffic Engineering · Simulation · Knowledge · Consensus · Reporting
 
 ## 🔧 Technology Stack
 
@@ -45,7 +45,7 @@ Orchestrator · Performance · Incident Investigation · Alarm Correlation · Lo
 |---|---|
 | **Frontend** | React, TypeScript, Tailwind CSS, React Flow, Recharts, Framer Motion |
 | **Backend** | FastAPI, Python, Pydantic |
-| **AI Orchestration** | Antigravity Orchestration Framework (16 specialized agents) |
+| **AI Orchestration** | TeleGenesis Multi-Agent Framework (16 specialized agents) |
 | **AI Infrastructure** | **Fireworks AI API accelerated by AMD Instinct™ MI300X GPUs** |
 
 ## ⚡ AMD Hardware Acceleration via Fireworks AI
@@ -54,7 +54,7 @@ TeleGenesis OS does not run local LLM instances, nor does it require active host
 
 * **AMD Instinct™ MI300X Clusters**: Fireworks AI runs its high-performance LLM inference catalog in partnership with AMD, powered directly by **AMD Instinct MI300X GPU accelerators**.
 * **ROCm & FireAttention Optimizations**: Because Fireworks AI is optimized for the **AMD ROCm™** software stack, our agent queries benefit from ultra-low latency and high token throughput.
-* **Massive Concurrency**: When an incident is investigated, the Antigravity Orchestrator dispatches **15 specialized domain agents concurrently**. The massive HBM3 memory bandwidth (5.3 TB/s) of the MI300X allows Fireworks to process all 15 agent prompts in parallel without queue delays or latency penalties.
+* **Massive Concurrency**: When an incident is investigated, the AI Agent Engine dispatches **15 specialized domain agents concurrently**. The massive HBM3 memory bandwidth (5.3 TB/s) of the MI300X allows Fireworks to process all 15 agent prompts in parallel without queue delays or latency penalties.
 
 ## 🚀 Quick Start
 
