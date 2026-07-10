@@ -191,6 +191,13 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
 
       {/* ─── SCIFI STYLES (Clean and decoupled) ─── */}
       <style>{`
+        html, body {
+          overflow: hidden !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          height: 100% !important;
+        }
+
         .tg-splash-container {
           position: fixed;
           inset: 0;
@@ -291,19 +298,20 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           display: grid;
           grid-template-columns: 1.1fr 1fr;
           align-items: center;
-          padding: 0 64px;
+          padding: 20px 64px;
           max-width: 1400px;
           width: 100%;
-          margin: 0 auto;
-          gap: 64px;
+          margin: auto;
+          gap: 48px;
           z-index: 5;
+          box-sizing: border-box;
         }
 
         @media (max-width: 1024px) {
           .tg-splash-main {
             grid-template-columns: 1fr;
-            padding: 40px 24px;
-            gap: 48px;
+            padding: 30px 24px;
+            gap: 32px;
             text-align: center;
           }
         }
@@ -324,12 +332,12 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 5px 12px;
+          padding: 4px 10px;
           border-radius: 4px;
           border: 1px solid rgba(6, 182, 212, 0.2);
           background: rgba(6, 182, 212, 0.04);
           width: fit-content;
-          margin-bottom: 24px;
+          margin-bottom: 12px;
         }
 
         .amd-badge-dot {
@@ -351,24 +359,24 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         }
 
         .hero-title {
-          font-size: 56px;
+          font-size: 46px;
           font-weight: 800;
-          line-height: 1.1;
-          letter-spacing: -2px;
-          margin-bottom: 20px;
-          height: 120px; /* reserve space for typing animation */
+          line-height: 1.15;
+          letter-spacing: -1.5px;
+          margin-bottom: 12px;
+          height: 105px; /* reserve space for typing animation */
         }
 
         @media (max-width: 1024px) {
           .hero-title {
             height: auto;
-            margin-bottom: 24px;
+            margin-bottom: 18px;
           }
         }
 
         @media (max-width: 640px) {
           .hero-title {
-            font-size: 38px;
+            font-size: 34px;
           }
         }
 
@@ -379,11 +387,11 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         }
 
         .hero-desc {
-          font-size: 15px;
+          font-size: 14px;
           color: #94a3b8;
-          line-height: 1.65;
+          line-height: 1.6;
           max-width: 540px;
-          margin-bottom: 36px;
+          margin-bottom: 16px;
         }
 
         /* ─── Operations Console HUD ─── */
@@ -391,10 +399,10 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           background: rgba(15, 23, 42, 0.45);
           border: 1px solid rgba(255, 255, 255, 0.05);
           border-radius: 8px;
-          padding: 16px 20px;
+          padding: 12px 18px;
           width: 100%;
           max-width: 500px;
-          margin-bottom: 36px;
+          margin-bottom: 18px;
           text-align: left;
           backdrop-filter: blur(8px);
         }
@@ -486,8 +494,8 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
 
         /* 3D Holographic Card containing generated image */
         .hologram-visual-card {
-          width: 440px;
-          height: 380px;
+          width: 400px;
+          height: 340px;
           border-radius: 12px;
           border: 1px solid rgba(239, 68, 68, 0.2);
           background: rgba(15, 23, 42, 0.3);
