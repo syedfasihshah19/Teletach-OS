@@ -198,7 +198,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           background-color: #03050c;
           background-image: 
             linear-gradient(rgba(5, 7, 15, 0.85), rgba(5, 7, 15, 0.85)),
-            url('/navy_galaxy_milkyway.png'),
+            url('/telecom_galaxy_lines.png'),
             linear-gradient(to right, rgba(6, 182, 212, 0.02) 1px, transparent 1px),
             linear-gradient(to bottom, rgba(6, 182, 212, 0.02) 1px, transparent 1px);
           background-size: cover, cover, 60px 60px, 60px 60px;
