@@ -195,13 +195,15 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           position: fixed;
           inset: 0;
           z-index: 99999;
-          background-color: #030408;
+          background-color: #03050c;
           background-image: 
-            radial-gradient(circle at 75% 30%, rgba(6, 182, 212, 0.07) 0%, transparent 65%),
-            radial-gradient(circle at 25% 75%, rgba(139, 92, 246, 0.05) 0%, transparent 60%),
+            radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 60%),
+            url('/navy_galaxy_milkyway.png'),
             linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
             linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-          background-size: 100% 100%, 100% 100%, 60px 60px, 60px 60px;
+          background-size: 100% 100%, cover, 60px 60px, 60px 60px;
+          background-position: center;
+          background-repeat: no-repeat;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
