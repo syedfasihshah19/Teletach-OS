@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface SplashPageProps {
   onEnter: () => void;
@@ -9,6 +9,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
   const [showDocs, setShowDocs] = useState(false);
   const [selectedTab, setSelectedTab] = useState<'architecture' | 'agents' | 'amd'>('architecture');
   const [systemLogs, setSystemLogs] = useState<string[]>([]);
+  const [typedTitle, setTypedTitle] = useState('');
   const [hudData, setHudData] = useState({
     latency: '1.8 ms',
     loss: '0.00%',
@@ -16,7 +17,130 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
     throughput: '942.8 Gbps'
   });
 
-  // Simulated real-time server telemetry log feed
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+
+  // Typewriter effect for tagline
+  useEffect(() => {
+    const fullText = "Cognitive AI-Powered Network Control";
+    let index = 0;
+    const timer = setInterval(() => {
+      setTypedTitle(fullText.substring(0, index));
+      index++;
+      if (index > fullText.length) {
+        clearInterval(timer);
+      }
+    }, 45);
+    return () => clearInterval(timer);
+  }, []);
+
+  // HTML5 Canvas Interactive Particle Network (0 API Credits, fully local)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const handleResize = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+
+    const particles: Array<{
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+    }> = [];
+
+    const particleCount = 45;
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        radius: Math.random() * 1.5 + 0.5
+      });
+    }
+
+    const draw = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      // Draw connections
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.05)';
+      ctx.lineWidth = 0.5;
+
+      for (let i = 0; i < particles.length; i++) {
+        const p1 = particles[i];
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+          if (dist < 130) {
+            ctx.strokeStyle = `rgba(6, 182, 212, ${0.08 * (1 - dist / 130)})`;
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw and update particles
+      ctx.fillStyle = 'rgba(34, 211, 238, 0.25)';
+      for (const p of particles) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+      }
+
+      animationFrameId = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  // 3D Perspective Card Tilt Hover effect
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const box = card.getBoundingClientRect();
+    const x = e.clientX - box.left - box.width / 2;
+    const y = e.clientY - box.top - box.height / 2;
+
+    // Tilt limits
+    const tiltX = (y / (box.height / 2)) * -8;
+    const tiltY = (x / (box.width / 2)) * 8;
+
+    card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`;
+  };
+
+  const handleMouseLeave = () => {
+    const card = cardRef.current;
+    if (!card) return;
+    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+  };
+
+  // Simulated server logs feed
   useEffect(() => {
     const logPool = [
       "SYS: Sync with telemetry cache complete",
@@ -34,11 +158,9 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
     ]);
 
     const interval = setInterval(() => {
-      // Add a log
       const newLog = logPool[Math.floor(Math.random() * logPool.length)];
       setSystemLogs(prev => [...prev.slice(-3), `[${new Date().toLocaleTimeString()}] ${newLog}`]);
 
-      // Shift telemetry slightly
       setHudData({
         latency: `${(1.5 + Math.random() * 0.6).toFixed(1)} ms`,
         loss: Math.random() > 0.95 ? '0.01%' : '0.00%',
@@ -64,20 +186,22 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         fontFamily: "'Fira Sans', system-ui, -apple-system, sans-serif"
       }}
     >
-      {/* ─── SCIFI STYLES (No compile dependencies) ─── */}
+      {/* ─── HTML5 Canvas Particle Background ─── */}
+      <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none opacity-40" />
+
+      {/* ─── SCIFI STYLES (Clean and decoupled) ─── */}
       <style>{`
-        /* ─── Global Reset & Layout ─── */
         .tg-splash-container {
           position: fixed;
           inset: 0;
           z-index: 99999;
-          background-color: #05070f;
+          background-color: #030408;
           background-image: 
-            radial-gradient(circle at 75% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 60%),
-            radial-gradient(circle at 25% 75%, rgba(139, 92, 246, 0.06) 0%, transparent 55%),
-            linear-gradient(to right, rgba(148, 163, 184, 0.03) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(148, 163, 184, 0.03) 1px, transparent 1px);
-          background-size: 100% 100%, 100% 100%, 50px 50px, 50px 50px;
+            radial-gradient(circle at 75% 30%, rgba(6, 182, 212, 0.07) 0%, transparent 65%),
+            radial-gradient(circle at 25% 75%, rgba(139, 92, 246, 0.05) 0%, transparent 60%),
+            linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+          background-size: 100% 100%, 100% 100%, 60px 60px, 60px 60px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
@@ -88,19 +212,19 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
 
         .tg-splash-container.fade-out {
           opacity: 0;
-          transform: scale(1.03);
+          transform: scale(1.025);
           pointer-events: none;
         }
 
-        /* ─── Header ─── */
+        /* ─── Navigation Header ─── */
         .tg-splash-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 20px 48px;
-          background: rgba(5, 7, 15, 0.6);
+          padding: 24px 64px;
+          background: rgba(3, 4, 8, 0.5);
           backdrop-filter: blur(12px);
-          border-b: 1px solid rgba(255, 255, 255, 0.05);
+          border-b: 1px solid rgba(255, 255, 255, 0.04);
           z-index: 10;
         }
 
@@ -117,23 +241,23 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         }
 
         .logo-icon {
-          width: 30px;
-          height: 30px;
+          width: 32px;
+          height: 32px;
           border-radius: 6px;
           background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 0 16px rgba(6, 182, 212, 0.35);
+          box-shadow: 0 0 16px rgba(6, 182, 212, 0.4);
           font-family: 'Fira Code', monospace;
           font-weight: 700;
           font-size: 12px;
-          color: #05070f;
+          color: #030408;
         }
 
         .logo-text {
           font-family: 'Fira Code', monospace;
-          font-size: 14px;
+          font-size: 15px;
           font-weight: 700;
           letter-spacing: 1.5px;
           text-transform: uppercase;
@@ -142,7 +266,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         .header-status {
           display: flex;
           align-items: center;
-          gap: 20px;
+          gap: 16px;
           font-family: 'Fira Code', monospace;
           font-size: 10px;
           color: #64748b;
@@ -159,13 +283,13 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           color: #4ade80;
         }
 
-        /* ─── Hero Container ─── */
+        /* ─── Hero Main Content ─── */
         .tg-splash-main {
           flex: 1;
           display: grid;
-          grid-template-columns: 1.15fr 1fr;
+          grid-template-columns: 1.1fr 1fr;
           align-items: center;
-          padding: 0 48px;
+          padding: 0 64px;
           max-width: 1400px;
           width: 100%;
           margin: 0 auto;
@@ -177,7 +301,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           .tg-splash-main {
             grid-template-columns: 1fr;
             padding: 40px 24px;
-            gap: 40px;
+            gap: 48px;
             text-align: center;
           }
         }
@@ -225,16 +349,24 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         }
 
         .hero-title {
-          font-size: 58px;
+          font-size: 56px;
           font-weight: 800;
           line-height: 1.1;
           letter-spacing: -2px;
-          margin-bottom: 24px;
+          margin-bottom: 20px;
+          height: 120px; /* reserve space for typing animation */
+        }
+
+        @media (max-width: 1024px) {
+          .hero-title {
+            height: auto;
+            margin-bottom: 24px;
+          }
         }
 
         @media (max-width: 640px) {
           .hero-title {
-            font-size: 42px;
+            font-size: 38px;
           }
         }
 
@@ -252,7 +384,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           margin-bottom: 36px;
         }
 
-        /* ─── Tech Console HUD (Left side spec card) ─── */
+        /* ─── Operations Console HUD ─── */
         .tech-console {
           background: rgba(15, 23, 42, 0.45);
           border: 1px solid rgba(255, 255, 255, 0.05);
@@ -262,6 +394,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           max-width: 500px;
           margin-bottom: 36px;
           text-align: left;
+          backdrop-filter: blur(8px);
         }
 
         .console-header {
@@ -287,7 +420,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           color: #06b6d4;
         }
 
-        /* ─── Buttons ─── */
+        /* ─── Action Buttons ─── */
         .btn-group {
           display: flex;
           gap: 16px;
@@ -311,7 +444,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
 
         .btn-enter {
           background: linear-gradient(90deg, #06b6d4 0%, #3b82f6 100%);
-          color: #05070f;
+          color: #030408;
           box-shadow: 0 0 24px rgba(6, 182, 212, 0.25);
           border: 1px solid rgba(6, 182, 212, 0.4);
         }
@@ -325,6 +458,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           background: rgba(255, 255, 255, 0.03);
           color: #f8fafc;
           border: 1px solid rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(4px);
         }
 
         .btn-docs:hover {
@@ -333,7 +467,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           transform: translateY(-2px);
         }
 
-        /* ─── Right Graphics Side ─── */
+        /* ─── Right Graphics Side (Motion Image Container) ─── */
         .hero-right {
           position: relative;
           display: flex;
@@ -348,79 +482,81 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           }
         }
 
-        .glow-aura {
-          position: absolute;
-          width: 340px;
-          height: 340px;
-          background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%);
-          filter: blur(20px);
-          pointer-events: none;
-          z-index: 1;
-        }
-
-        .orbit-ring-1 {
-          position: absolute;
-          width: 340px;
-          height: 340px;
-          border: 1px dashed rgba(6, 182, 212, 0.2);
-          border-radius: 50%;
-          transform: rotateX(72deg) rotateY(-18deg);
-          animation: spin 30s linear infinite;
-          pointer-events: none;
-          z-index: 2;
-        }
-
-        .orbit-ring-2 {
-          position: absolute;
-          width: 380px;
+        /* 3D Holographic Card containing generated image */
+        .hologram-visual-card {
+          width: 440px;
           height: 380px;
-          border: 1px double rgba(168, 85, 247, 0.12);
-          border-radius: 50%;
-          transform: rotateX(68deg) rotateY(12deg);
-          animation: spin-reverse 40s linear infinite;
-          pointer-events: none;
-          z-index: 2;
-        }
-
-        /* ─── Globe ─── */
-        .hologram-globe {
-          position: absolute;
-          width: 240px;
-          height: 240px;
-          border-radius: 50%;
+          border-radius: 12px;
+          border: 1px solid rgba(6, 182, 212, 0.2);
+          background: rgba(15, 23, 42, 0.3);
+          backdrop-filter: blur(12px);
+          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+          position: relative;
+          overflow: hidden;
+          transition: transform 150ms ease-out, border-color 200ms ease;
           display: flex;
-          align-items: center;
           justify-content: center;
-          animation: float 6s ease-in-out infinite;
-          z-index: 3;
+          align-items: center;
+          cursor: crosshair;
+          z-index: 5;
         }
 
-        .hologram-globe svg {
+        @media (max-width: 1024px) {
+          .hologram-visual-card {
+            width: 320px;
+            height: 280px;
+          }
+        }
+
+        .hologram-visual-card:hover {
+          border-color: rgba(6, 182, 212, 0.55);
+        }
+
+        /* Asset background visual */
+        .hologram-asset-img {
           width: 100%;
           height: 100%;
-          color: rgba(6, 182, 212, 0.5);
-          filter: drop-shadow(0 0 16px rgba(6,182,212,0.4));
-          animation: spin-slow 28s linear infinite;
+          object-fit: cover;
+          opacity: 0.85;
+          transition: transform 300ms ease;
+          pointer-events: none;
+          filter: brightness(0.9) contrast(1.1);
         }
 
-        /* ─── Live Telemetry Panel (Right side floating HUD) ─── */
+        .hologram-visual-card:hover .hologram-asset-img {
+          transform: scale(1.03);
+          filter: brightness(1.05) contrast(1.1);
+        }
+
+        /* Radar scan sweeping overlay */
+        .radar-scanner {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, transparent 50%, rgba(6, 182, 212, 0.15) 50%, transparent 52%);
+          background-size: 100% 200%;
+          animation: scan-sweep 6s linear infinite;
+          pointer-events: none;
+          z-index: 6;
+        }
+
+        /* Dynamic HUD telemetry data card overlay */
         .hud-telemetry-panel {
           position: absolute;
-          top: 15%;
-          right: 5%;
-          background: rgba(15, 23, 42, 0.7);
-          border: 1px solid rgba(6, 182, 212, 0.25);
-          border-radius: 6px;
+          bottom: 24px;
+          right: 24px;
+          background: rgba(5, 7, 15, 0.85);
+          border: 1px solid rgba(6, 182, 212, 0.3);
+          border-radius: 4px;
           padding: 12px 16px;
           width: 170px;
           backdrop-filter: blur(8px);
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
           z-index: 10;
           font-family: 'Fira Code', monospace;
           font-size: 10px;
           color: #94a3b8;
-          animation: float 5.5s ease-in-out infinite;
-          animation-delay: 1s;
+          pointer-events: none;
+          transition: all 250ms ease;
         }
 
         .hud-tel-row {
@@ -436,24 +572,6 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         .hud-tel-val {
           color: #22d3ee;
           font-weight: 600;
-        }
-
-        /* ─── Cybernetic Hand ─── */
-        .cyber-hand {
-          position: absolute;
-          bottom: 4%;
-          width: 310px;
-          height: 170px;
-          pointer-events: none;
-          animation: hand-breath 4s ease-in-out infinite;
-          z-index: 2;
-        }
-
-        .cyber-hand svg {
-          width: 100%;
-          height: 100%;
-          color: rgba(59, 130, 246, 0.25);
-          filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.35));
         }
 
         /* ─── Detailed Technical Walkthrough Modal ─── */
@@ -584,7 +702,6 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           margin-bottom: 16px;
         }
 
-        /* Tech Table styling */
         .tech-table {
           width: 100%;
           border-collapse: collapse;
@@ -659,46 +776,15 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           85% { opacity: 0.7; }
           100% { transform: translateY(-100px) scale(0.6); opacity: 0; }
         }
+        @keyframes scan-sweep {
+          0% { background-position: 0% 0%; }
+          100% { background-position: 0% 200%; }
+        }
         @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-8px) rotate(1deg); }
-        }
-        @keyframes hand-breath {
-          0%, 100% { transform: translateY(0px) scale(1); }
-          50% { transform: translateY(4px) scale(0.98); }
-        }
-        @keyframes spin {
-          from { transform: rotateX(72deg) rotateY(-18deg) rotateZ(0deg); }
-          to { transform: rotateX(72deg) rotateY(-18deg) rotateZ(360deg); }
-        }
-        @keyframes spin-reverse {
-          from { transform: rotateX(68deg) rotateY(12deg) rotateZ(360deg); }
-          to { transform: rotateX(68deg) rotateY(12deg) rotateZ(0deg); }
-        }
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-8px); }
         }
       `}</style>
-
-      {/* ─── Floating Particle Grid ─── */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-cyan-400"
-            style={{
-              width: `${Math.random() * 2 + 1}px`,
-              height: `${Math.random() * 2 + 1}px`,
-              top: `${Math.random() * 80 + 10}%`,
-              left: `${Math.random() * 80 + 10}%`,
-              opacity: Math.random() * 0.5 + 0.2,
-              animation: `float-particle ${6 + Math.random() * 8}s linear infinite`,
-              animationDelay: `${Math.random() * 4}s`
-            }}
-          />
-        ))}
-      </div>
 
       {/* ─── Navigation Header ─── */}
       <header className="tg-splash-header">
@@ -728,8 +814,8 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           </div>
 
           <h1 className="hero-title">
-            Cognitive AI-Powered <br />
-            <span className="gradient-txt">Network Control</span>
+            {typedTitle}
+            <span className="cursor-blink" style={{ color: '#06b6d4', animation: 'pulse-dot 0.8s infinite' }}>_</span>
           </h1>
 
           <p className="hero-desc">
@@ -767,91 +853,54 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           </div>
         </div>
 
-        {/* Right Side: Scientific Globe Animation with dynamic HUD feedback */}
+        {/* Right Side: Interactive 3D Perspective Visual Card with Radar Sweeper */}
         <div className="hero-right">
           <div className="glow-aura" />
-          <div className="orbit-ring-1" />
-          <div className="orbit-ring-2" />
+          
+          <div 
+            ref={cardRef}
+            className="hologram-visual-card animate-[float_6s_ease-in-out_infinite]"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          >
+            {/* Holographic Radar Line Sweeper */}
+            <div className="radar-scanner" />
+            
+            {/* Generated Image visual asset */}
+            <img 
+              src="/holographic_network_globe.png" 
+              alt="Holographic Globe Network" 
+              className="hologram-asset-img"
+            />
 
-          {/* Interactive Floating Globe */}
-          <div className="hologram-globe">
-            <svg viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" strokeWidth="0.4" strokeDasharray="3 3" opacity="0.25" />
-              <ellipse cx="50" cy="50" rx="48" ry="12" fill="none" stroke="currentColor" strokeWidth="0.4" />
-              <ellipse cx="50" cy="50" rx="48" ry="28" fill="none" stroke="currentColor" strokeWidth="0.4" />
-              <line x1="2" y1="50" x2="98" y2="50" stroke="currentColor" strokeWidth="0.4" />
-              <ellipse cx="50" cy="50" rx="12" ry="48" fill="none" stroke="currentColor" strokeWidth="0.4" />
-              <ellipse cx="50" cy="50" rx="28" ry="48" fill="none" stroke="currentColor" strokeWidth="0.4" />
-              <line x1="50" y1="2" x2="50" y2="98" stroke="currentColor" strokeWidth="0.4" />
+            {/* Corner Bracket Decorations (Cyberpunk UI elements) */}
+            <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-cyan-400/40 pointer-events-none" />
+            <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-cyan-400/40 pointer-events-none" />
+            <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-cyan-400/40 pointer-events-none" />
+            <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-cyan-400/40 pointer-events-none" />
 
-              {/* Constellation Nodes */}
-              <circle cx="28" cy="38" r="2.5" fill="#06b6d4" />
-              <circle cx="72" cy="38" r="2.5" fill="#3b82f6" />
-              <circle cx="50" cy="22" r="2.5" fill="#818cf8" />
-              <circle cx="34" cy="62" r="2.5" fill="#a855f7" />
-              <circle cx="66" cy="62" r="2.5" fill="#06b6d4" />
-              
-              {/* Lines */}
-              <line x1="28" y1="38" x2="50" y2="22" stroke="#06b6d4" strokeWidth="0.3" strokeDasharray="1 1" />
-              <line x1="72" y1="38" x2="50" y2="22" stroke="#3b82f6" strokeWidth="0.3" strokeDasharray="1 1" />
-              <line x1="34" y1="62" x2="50" y2="50" stroke="#818cf8" strokeWidth="0.3" />
-              <line x1="66" y1="62" x2="50" y2="50" stroke="#06b6d4" strokeWidth="0.3" />
-            </svg>
-          </div>
-
-          {/* Floating Live Telemetry HUD */}
-          <div className="hud-telemetry-panel">
-            <div style={{ color: '#06b6d4', borderBottom: '1px solid rgba(6,182,212,0.15)', paddingBottom: '4px', marginBottom: '8px', fontWeight: 'bold' }}>
-              TEL_METRICS
+            {/* Dynamic Telemetry HUD overlay inside card */}
+            <div className="hud-telemetry-panel">
+              <div style={{ color: '#06b6d4', borderBottom: '1px solid rgba(6,182,212,0.15)', paddingBottom: '4px', marginBottom: '8px', fontWeight: 'bold' }}>
+                TEL_METRICS
+              </div>
+              <div className="hud-tel-row">
+                <span>LATENCY:</span>
+                <span className="hud-tel-val">{hudData.latency}</span>
+              </div>
+              <div className="hud-tel-row">
+                <span>PKT LOSS:</span>
+                <span className="hud-tel-val">{hudData.loss}</span>
+              </div>
+              <div className="hud-tel-row">
+                <span>JITTER:</span>
+                <span className="hud-tel-val">{hudData.jitter}</span>
+              </div>
+              <div className="hud-tel-row">
+                <span>CAPACITY:</span>
+                <span className="hud-tel-val">{hudData.throughput}</span>
+              </div>
             </div>
-            <div className="hud-tel-row">
-              <span>LATENCY:</span>
-              <span className="hud-tel-val">{hudData.latency}</span>
-            </div>
-            <div className="hud-tel-row">
-              <span>PKT LOSS:</span>
-              <span className="hud-tel-val">{hudData.loss}</span>
-            </div>
-            <div className="hud-tel-row">
-              <span>JITTER:</span>
-              <span className="hud-tel-val">{hudData.jitter}</span>
-            </div>
-            <div className="hud-tel-row">
-              <span>CAPACITY:</span>
-              <span className="hud-tel-val">{hudData.throughput}</span>
-            </div>
-          </div>
-
-          {/* Cybernetic Wireframe Hand */}
-          <div className="cyber-hand">
-            <svg viewBox="0 0 200 120">
-              <path d="M 60 120 L 140 120 L 150 90 L 50 90 Z" fill="none" stroke="currentColor" strokeWidth="0.6" />
-              <path d="M 50 90 L 150 90 L 165 55 L 35 55 Z" fill="none" stroke="currentColor" strokeWidth="0.6" />
-              
-              <line x1="60" y1="120" x2="50" y2="90" stroke="currentColor" strokeWidth="0.4" />
-              <line x1="80" y1="120" x2="75" y2="90" stroke="currentColor" strokeWidth="0.4" />
-              <line x1="100" y1="120" x2="100" y2="90" stroke="currentColor" strokeWidth="0.4" />
-              <line x1="120" y1="120" x2="125" y2="90" stroke="currentColor" strokeWidth="0.4" />
-              <line x1="140" y1="120" x2="150" y2="90" stroke="currentColor" strokeWidth="0.4" />
-
-              <line x1="50" y1="90" x2="35" y2="55" stroke="currentColor" strokeWidth="0.4" />
-              <line x1="75" y1="90" x2="70" y2="55" stroke="currentColor" strokeWidth="0.4" />
-              <line x1="100" y1="90" x2="100" y2="55" stroke="currentColor" strokeWidth="0.4" />
-              <line x1="125" y1="90" x2="130" y2="55" stroke="currentColor" strokeWidth="0.4" />
-              <line x1="150" y1="90" x2="165" y2="55" stroke="currentColor" strokeWidth="0.4" />
-
-              <path d="M 35 55 L 20 40 L 15 28 L 22 25 L 38 42 Z" fill="none" stroke="currentColor" strokeWidth="0.6" />
-              <path d="M 45 55 L 45 25 L 47 10 L 53 10 L 55 25 L 55 55" fill="none" stroke="currentColor" strokeWidth="0.6" />
-              <path d="M 75 55 L 77 20 L 79 5 L 87 5 L 89 20 L 85 55" fill="none" stroke="currentColor" strokeWidth="0.6" />
-              <path d="M 115 55 L 113 22 L 115 8 L 123 8 L 125 22 L 125 55" fill="none" stroke="currentColor" strokeWidth="0.6" />
-              <path d="M 145 55 L 149 32 L 153 20 L 159 20 L 161 32 L 155 55" fill="none" stroke="currentColor" strokeWidth="0.6" />
-
-              <circle cx="17" cy="26" r="2" fill="#06b6d4" />
-              <circle cx="50" cy="9" r="2" fill="#06b6d4" />
-              <circle cx="83" cy="4" r="2" fill="#06b6d4" />
-              <circle cx="119" cy="7" r="2" fill="#06b6d4" />
-              <circle cx="156" cy="19" r="2" fill="#06b6d4" />
-            </svg>
           </div>
         </div>
       </main>
@@ -910,7 +959,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
                   <div className="content-section">
                     <h4><span>//</span> DIURNAL AND CASCADING FAILURE MODELING</h4>
                     <p className="content-p">
-                      The simulated data represents realistic network behaviors. Network traffic follows a strict diurnal cycle peaking at noon, and system failures propagate realistically (e.g. CRC error bursts cause OSPF session drop -> routing flaps -> downstream congestions).
+                      The simulated data represents realistic network behaviors. Network traffic follows a strict diurnal cycle peaking at noon, and system failures propagate realistically (e.g. CRC error bursts cause OSPF session drop &rarr; routing flaps &rarr; downstream congestions).
                     </p>
                   </div>
                 </div>
