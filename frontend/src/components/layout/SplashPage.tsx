@@ -788,23 +788,6 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         }
       `}</style>
 
-      {/* ─── Navigation Header ─── */}
-      <header className="tg-splash-header">
-        <div className="logo-group">
-          <div className="logo-icon">TG</div>
-          <span className="logo-text">
-            TeleGenesis <span style={{ color: '#06b6d4' }}>OS</span>
-          </span>
-        </div>
-
-        <div className="header-status">
-          <span>HOST: localhost:5173</span>
-          <div className="status-pill">
-            <span className="amd-badge-dot" style={{ backgroundColor: '#4ade80', boxShadow: '0 0 8px #4ade80' }}></span>
-            <span>AMD Instinct Node Active</span>
-          </div>
-        </div>
-      </header>
 
       {/* ─── Main Columns ─── */}
       <main className="tg-splash-main">
