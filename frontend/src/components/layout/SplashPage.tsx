@@ -7,26 +7,48 @@ interface SplashPageProps {
 export default function SplashPage({ onEnter }: SplashPageProps) {
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [showDocs, setShowDocs] = useState(false);
-  const [hudCoord, setHudCoord] = useState({ x: '50%', y: '50%' });
-  const [hudActive, setHudActive] = useState(false);
-  const [hudNodeName, setHudNodeName] = useState('NODE_CORE_01');
-  const [hudStatus, setHudStatus] = useState('ACTIVE');
-  const [pingTime, setPingTime] = useState(2);
+  const [selectedTab, setSelectedTab] = useState<'architecture' | 'agents' | 'amd'>('architecture');
+  const [systemLogs, setSystemLogs] = useState<string[]>([]);
+  const [hudData, setHudData] = useState({
+    latency: '1.8 ms',
+    loss: '0.00%',
+    jitter: '0.2 ms',
+    throughput: '942.8 Gbps'
+  });
 
-  // Generate dynamic telemetry values for HUD
+  // Simulated real-time server telemetry log feed
   useEffect(() => {
+    const logPool = [
+      "SYS: Sync with telemetry cache complete",
+      "API: Dispatching Fireworks interface calls",
+      "ROCm: Instinct MI300X temperature 44°C",
+      "NET: OSPF neighbor state full",
+      "AGENT: Consensus engine standby",
+      "CONN: Nokia OSS stream healthy",
+      "CONN: Prometheus polling active"
+    ];
+    setSystemLogs([
+      "SYS: Boot complete",
+      "ROCm: Loading ROCm stack v6.1",
+      "CONN: Mock connector initialized"
+    ]);
+
     const interval = setInterval(() => {
-      setPingTime(Math.floor(Math.random() * 3) + 1);
-    }, 2000);
+      // Add a log
+      const newLog = logPool[Math.floor(Math.random() * logPool.length)];
+      setSystemLogs(prev => [...prev.slice(-3), `[${new Date().toLocaleTimeString()}] ${newLog}`]);
+
+      // Shift telemetry slightly
+      setHudData({
+        latency: `${(1.5 + Math.random() * 0.6).toFixed(1)} ms`,
+        loss: Math.random() > 0.95 ? '0.01%' : '0.00%',
+        jitter: `${(0.1 + Math.random() * 0.3).toFixed(1)} ms`,
+        throughput: `${(940 + Math.random() * 8).toFixed(1)} Gbps`
+      });
+    }, 2800);
+
     return () => clearInterval(interval);
   }, []);
-
-  const handleNodeHover = (nodeName: string, status: string, x: string, y: string) => {
-    setHudNodeName(nodeName);
-    setHudStatus(status);
-    setHudCoord({ x, y });
-    setHudActive(true);
-  };
 
   const handleEnter = () => {
     setIsFadingOut(true);
@@ -44,17 +66,18 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
     >
       {/* ─── SCIFI STYLES (No compile dependencies) ─── */}
       <style>{`
+        /* ─── Global Reset & Layout ─── */
         .tg-splash-container {
           position: fixed;
           inset: 0;
           z-index: 99999;
-          background-color: #030712;
+          background-color: #05070f;
           background-image: 
-            radial-gradient(circle at 65% 35%, rgba(6, 182, 212, 0.12) 0%, transparent 60%),
-            radial-gradient(circle at 25% 75%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-            linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
-          background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+            radial-gradient(circle at 75% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 60%),
+            radial-gradient(circle at 25% 75%, rgba(139, 92, 246, 0.06) 0%, transparent 55%),
+            linear-gradient(to right, rgba(148, 163, 184, 0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(148, 163, 184, 0.03) 1px, transparent 1px);
+          background-size: 100% 100%, 100% 100%, 50px 50px, 50px 50px;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
@@ -65,18 +88,18 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
 
         .tg-splash-container.fade-out {
           opacity: 0;
-          transform: scale(1.04);
+          transform: scale(1.03);
           pointer-events: none;
         }
 
-        /* ─── Navigation ─── */
+        /* ─── Header ─── */
         .tg-splash-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 24px 64px;
-          background: rgba(3, 7, 18, 0.4);
-          backdrop-filter: blur(8px);
+          padding: 20px 48px;
+          background: rgba(5, 7, 15, 0.6);
+          backdrop-filter: blur(12px);
           border-b: 1px solid rgba(255, 255, 255, 0.05);
           z-index: 10;
         }
@@ -94,56 +117,59 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         }
 
         .logo-icon {
-          width: 32px;
-          height: 32px;
-          border-radius: 8px;
+          width: 30px;
+          height: 30px;
+          border-radius: 6px;
           background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 0 16px rgba(6, 182, 212, 0.4);
+          box-shadow: 0 0 16px rgba(6, 182, 212, 0.35);
           font-family: 'Fira Code', monospace;
           font-weight: 700;
-          font-size: 13px;
-          color: #030712;
+          font-size: 12px;
+          color: #05070f;
         }
 
         .logo-text {
           font-family: 'Fira Code', monospace;
-          font-size: 15px;
-          font-weight: 600;
-          letter-spacing: 1px;
-          text-transform: uppercase;
-        }
-
-        .nav-links {
-          display: flex;
-          align-items: center;
-          gap: 32px;
-          font-family: 'Fira Code', monospace;
-          font-size: 11px;
+          font-size: 14px;
+          font-weight: 700;
           letter-spacing: 1.5px;
           text-transform: uppercase;
-          color: #94a3b8;
         }
 
-        .nav-link {
-          text-decoration: none;
-          color: inherit;
-          transition: color 200ms ease;
+        .header-status {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          font-family: 'Fira Code', monospace;
+          font-size: 10px;
+          color: #64748b;
         }
 
-        /* ─── Main Hero Layout ─── */
+        .status-pill {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 10px;
+          border-radius: 4px;
+          background: rgba(34, 197, 94, 0.08);
+          border: 1px solid rgba(34, 197, 94, 0.2);
+          color: #4ade80;
+        }
+
+        /* ─── Hero Container ─── */
         .tg-splash-main {
           flex: 1;
           display: grid;
-          grid-template-columns: 1.1fr 1fr;
+          grid-template-columns: 1.15fr 1fr;
           align-items: center;
-          padding: 0 64px;
-          max-width: 1300px;
+          padding: 0 48px;
+          max-width: 1400px;
           width: 100%;
           margin: 0 auto;
-          gap: 48px;
+          gap: 64px;
           z-index: 5;
         }
 
@@ -151,7 +177,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           .tg-splash-main {
             grid-template-columns: 1fr;
             padding: 40px 24px;
-            gap: 32px;
+            gap: 40px;
             text-align: center;
           }
         }
@@ -168,16 +194,14 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           }
         }
 
-        /* ─── UI Badges & Typography ─── */
         .amd-badge {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 6px 16px;
-          border-radius: 9999px;
-          border: 1px solid rgba(6, 182, 212, 0.25);
-          background: rgba(6, 182, 212, 0.05);
-          backdrop-filter: blur(8px);
+          padding: 5px 12px;
+          border-radius: 4px;
+          border: 1px solid rgba(6, 182, 212, 0.2);
+          background: rgba(6, 182, 212, 0.04);
           width: fit-content;
           margin-bottom: 24px;
         }
@@ -193,24 +217,24 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
 
         .amd-badge-text {
           font-family: 'Fira Code', monospace;
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 700;
-          letter-spacing: 1.5px;
+          letter-spacing: 2px;
           text-transform: uppercase;
           color: #22d3ee;
         }
 
         .hero-title {
-          font-size: 54px;
+          font-size: 58px;
           font-weight: 800;
-          line-height: 1.15;
-          letter-spacing: -1.5px;
-          margin-bottom: 20px;
+          line-height: 1.1;
+          letter-spacing: -2px;
+          margin-bottom: 24px;
         }
 
         @media (max-width: 640px) {
           .hero-title {
-            font-size: 40px;
+            font-size: 42px;
           }
         }
 
@@ -223,32 +247,44 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         .hero-desc {
           font-size: 15px;
           color: #94a3b8;
-          line-height: 1.6;
-          max-width: 520px;
+          line-height: 1.65;
+          max-width: 540px;
           margin-bottom: 36px;
         }
 
-        /* ─── Feature Tag grid ─── */
-        .spec-grid {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 12px;
-          margin-bottom: 40px;
+        /* ─── Tech Console HUD (Left side spec card) ─── */
+        .tech-console {
+          background: rgba(15, 23, 42, 0.45);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          border-radius: 8px;
+          padding: 16px 20px;
+          width: 100%;
+          max-width: 500px;
+          margin-bottom: 36px;
+          text-align: left;
         }
 
-        .spec-tag {
+        .console-header {
+          display: flex;
+          justify-content: space-between;
           font-family: 'Fira Code', monospace;
           font-size: 10px;
-          padding: 6px 12px;
-          border-radius: 6px;
-          background: rgba(30, 41, 59, 0.3);
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          color: #cbd5e1;
+          color: #64748b;
+          margin-bottom: 10px;
+          border-b: 1px solid rgba(255, 255, 255, 0.05);
+          padding-bottom: 6px;
         }
 
-        .spec-tag-accent {
-          border-color: rgba(168, 85, 247, 0.25);
-          color: #d8b4fe;
+        .console-log-row {
+          font-family: 'Fira Code', monospace;
+          font-size: 10px;
+          color: #94a3b8;
+          line-height: 1.6;
+          margin-bottom: 2px;
+        }
+
+        .console-log-accent {
+          color: #06b6d4;
         }
 
         /* ─── Buttons ─── */
@@ -264,7 +300,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           font-weight: 700;
           letter-spacing: 1px;
           padding: 14px 28px;
-          border-radius: 8px;
+          border-radius: 4px;
           cursor: pointer;
           transition: all 250ms ease;
           border: none;
@@ -275,7 +311,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
 
         .btn-enter {
           background: linear-gradient(90deg, #06b6d4 0%, #3b82f6 100%);
-          color: #030712;
+          color: #05070f;
           box-shadow: 0 0 24px rgba(6, 182, 212, 0.25);
           border: 1px solid rgba(6, 182, 212, 0.4);
         }
@@ -314,20 +350,19 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
 
         .glow-aura {
           position: absolute;
-          width: 320px;
-          height: 320px;
-          background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%);
+          width: 340px;
+          height: 340px;
+          background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%);
           filter: blur(20px);
           pointer-events: none;
           z-index: 1;
         }
 
-        /* Orbiting Rings */
         .orbit-ring-1 {
           position: absolute;
-          width: 350px;
-          height: 350px;
-          border: 1px dashed rgba(6, 182, 212, 0.25);
+          width: 340px;
+          height: 340px;
+          border: 1px dashed rgba(6, 182, 212, 0.2);
           border-radius: 50%;
           transform: rotateX(72deg) rotateY(-18deg);
           animation: spin 30s linear infinite;
@@ -337,9 +372,9 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
 
         .orbit-ring-2 {
           position: absolute;
-          width: 390px;
-          height: 390px;
-          border: 1px double rgba(168, 85, 247, 0.15);
+          width: 380px;
+          height: 380px;
+          border: 1px double rgba(168, 85, 247, 0.12);
           border-radius: 50%;
           transform: rotateX(68deg) rotateY(12deg);
           animation: spin-reverse 40s linear infinite;
@@ -350,8 +385,8 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         /* ─── Globe ─── */
         .hologram-globe {
           position: absolute;
-          width: 250px;
-          height: 250px;
+          width: 240px;
+          height: 240px;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -360,96 +395,68 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           z-index: 3;
         }
 
-        @media (max-width: 1024px) {
-          .hologram-globe {
-            width: 200px;
-            height: 200px;
-          }
-        }
-
         .hologram-globe svg {
           width: 100%;
           height: 100%;
-          color: rgba(6, 182, 212, 0.55);
-          filter: drop-shadow(0 0 16px rgba(6,182,212,0.45));
-          animation: spin-slow 25s linear infinite;
+          color: rgba(6, 182, 212, 0.5);
+          filter: drop-shadow(0 0 16px rgba(6,182,212,0.4));
+          animation: spin-slow 28s linear infinite;
         }
 
-        .interactive-node {
-          cursor: pointer;
-          transition: fill 200ms, r 200ms;
-        }
-
-        .interactive-node:hover {
-          fill: #22d3ee;
-          r: 3.5;
-        }
-
-        /* ─── Floating HUD Telemetry HUD ─── */
-        .hud-panel {
+        /* ─── Live Telemetry Panel (Right side floating HUD) ─── */
+        .hud-telemetry-panel {
           position: absolute;
-          background: rgba(15, 23, 42, 0.85);
-          border: 1px solid rgba(6, 182, 212, 0.3);
-          border-radius: 8px;
-          padding: 12px;
-          width: 160px;
+          top: 15%;
+          right: 5%;
+          background: rgba(15, 23, 42, 0.7);
+          border: 1px solid rgba(6, 182, 212, 0.25);
+          border-radius: 6px;
+          padding: 12px 16px;
+          width: 170px;
           backdrop-filter: blur(8px);
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
           z-index: 10;
           font-family: 'Fira Code', monospace;
-          font-size: 9px;
+          font-size: 10px;
           color: #94a3b8;
-          pointer-events: none;
-          transform: translate(-50%, -100%) translateY(-20px);
-          transition: opacity 250ms ease, transform 250ms ease;
+          animation: float 5.5s ease-in-out infinite;
+          animation-delay: 1s;
         }
 
-        .hud-title {
-          font-weight: 700;
-          color: #06b6d4;
-          border-b: 1px solid rgba(6, 182, 212, 0.2);
-          padding-bottom: 4px;
+        .hud-tel-row {
+          display: flex;
+          justify-content: space-between;
           margin-bottom: 6px;
         }
 
-        .hud-item {
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 4px;
+        .hud-tel-row:last-child {
+          margin-bottom: 0;
         }
 
-        .hud-item-val {
-          color: #f8fafc;
+        .hud-tel-val {
+          color: #22d3ee;
           font-weight: 600;
         }
 
-        /* ─── Hand ─── */
+        /* ─── Cybernetic Hand ─── */
         .cyber-hand {
           position: absolute;
-          bottom: 2%;
-          width: 320px;
-          height: 180px;
+          bottom: 4%;
+          width: 310px;
+          height: 170px;
           pointer-events: none;
           animation: hand-breath 4s ease-in-out infinite;
           z-index: 2;
         }
 
-        @media (max-width: 1024px) {
-          .cyber-hand {
-            width: 260px;
-            height: 140px;
-            bottom: 5%;
-          }
-        }
-
         .cyber-hand svg {
           width: 100%;
           height: 100%;
-          color: rgba(59, 130, 246, 0.3);
-          filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.4));
+          color: rgba(59, 130, 246, 0.25);
+          filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.35));
         }
 
-        /* ─── Architectural Walkthrough Overlay Modal ─── */
+        /* ─── Detailed Technical Walkthrough Modal ─── */
         .walkthrough-overlay {
           position: fixed;
           inset: 0;
@@ -460,80 +467,103 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           align-items: center;
           z-index: 100000;
           padding: 24px;
-          animation: fade-in-modal 300ms ease forwards;
         }
 
         .walkthrough-modal {
-          background: rgba(15, 23, 42, 0.95);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          border-radius: 16px;
+          background: #0b0f19;
+          border: 1px solid rgba(6, 182, 212, 0.2);
+          border-radius: 8px;
           width: 100%;
-          max-width: 760px;
-          max-height: 80vh;
-          overflow-y: auto;
-          box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-          padding: 40px;
+          max-width: 900px;
+          height: 80vh;
+          box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+          display: flex;
+          flex-direction: column;
           position: relative;
           color: #f8fafc;
-          animation: scale-in-modal 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+          overflow: hidden;
         }
 
-        @media (max-width: 640px) {
-          .walkthrough-modal {
-            padding: 24px;
-          }
+        .modal-header {
+          padding: 24px 32px;
+          border-b: 1px solid rgba(255, 255, 255, 0.05);
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .modal-title-group h2 {
+          font-size: 20px;
+          font-weight: 800;
+          letter-spacing: -0.5px;
+          color: #f8fafc;
+        }
+
+        .modal-title-group p {
+          font-family: 'Fira Code', monospace;
+          font-size: 9px;
+          color: #06b6d4;
+          margin-top: 4px;
         }
 
         .modal-close-btn {
-          position: absolute;
-          top: 24px;
-          right: 24px;
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.1);
-          color: #cbd5e1;
-          width: 32px;
-          height: 32px;
-          border-radius: 50%;
+          background: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          color: #94a3b8;
+          width: 28px;
+          height: 28px;
+          border-radius: 4px;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          font-family: monospace;
           font-weight: bold;
-          font-size: 14px;
           transition: all 200ms ease;
         }
 
         .modal-close-btn:hover {
-          background: rgba(239, 68, 68, 0.2);
-          border-color: rgba(239, 68, 68, 0.4);
-          color: #fca5a5;
+          background: rgba(239, 68, 68, 0.15);
+          border-color: rgba(239, 68, 68, 0.3);
+          color: #ef4444;
         }
 
-        .modal-title {
-          font-size: 24px;
-          font-weight: 700;
-          color: #f8fafc;
-          margin-bottom: 8px;
-          border-left: 4px solid #06b6d4;
-          padding-left: 12px;
+        /* Paginated Layout inside Modal */
+        .modal-tabs {
+          display: flex;
+          background: rgba(255, 255, 255, 0.02);
+          border-b: 1px solid rgba(255, 255, 255, 0.05);
+          padding: 0 32px;
         }
 
-        .modal-subtitle {
-          font-size: 12px;
+        .modal-tab {
           font-family: 'Fira Code', monospace;
+          font-size: 10px;
+          padding: 14px 20px;
+          color: #64748b;
+          cursor: pointer;
+          border-b: 2px solid transparent;
+          transition: all 200ms ease;
+        }
+
+        .modal-tab.active {
           color: #06b6d4;
+          border-b-color: #06b6d4;
+          background: rgba(6, 182, 212, 0.02);
+        }
+
+        .modal-content {
+          flex: 1;
+          overflow-y: auto;
+          padding: 32px;
+        }
+
+        .content-section {
           margin-bottom: 32px;
-          padding-left: 16px;
         }
 
-        .modal-section {
-          margin-bottom: 28px;
-        }
-
-        .modal-section-title {
-          font-size: 16px;
-          font-weight: 600;
+        .content-section h4 {
+          font-size: 14px;
+          font-weight: 700;
           color: #e2e8f0;
           margin-bottom: 12px;
           display: flex;
@@ -541,49 +571,57 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           gap: 8px;
         }
 
-        .modal-section-title span {
+        .content-section h4 span {
           color: #06b6d4;
           font-family: 'Fira Code', monospace;
-          font-size: 14px;
+          font-size: 12px;
         }
 
-        .modal-body-txt {
+        .content-p {
           font-size: 13.5px;
           color: #94a3b8;
           line-height: 1.6;
           margin-bottom: 16px;
         }
 
-        .modal-list {
-          list-style: none;
-          padding-left: 8px;
-          margin-bottom: 16px;
+        /* Tech Table styling */
+        .tech-table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 16px;
+          font-size: 12px;
         }
 
-        .modal-list-item {
-          font-size: 13px;
-          color: #cbd5e1;
-          margin-bottom: 8px;
-          display: flex;
-          align-items: flex-start;
-          gap: 8px;
-        }
-
-        .modal-list-item::before {
-          content: '▪';
-          color: #06b6d4;
+        .tech-table th {
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          color: #f8fafc;
+          font-family: 'Fira Code', monospace;
           font-size: 10px;
-          margin-top: 2px;
+          font-weight: 700;
+          text-align: left;
+          padding: 10px 14px;
+        }
+
+        .tech-table td {
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          padding: 10px 14px;
+          color: #cbd5e1;
+        }
+
+        .tech-table tr:hover td {
+          background: rgba(6, 182, 212, 0.02);
         }
 
         .modal-footer {
-          margin-top: 36px;
-          padding-top: 20px;
-          border-t: 1px solid rgba(255,255,255,0.05);
-          font-size: 11px;
+          padding: 16px 32px;
+          border-t: 1px solid rgba(255, 255, 255, 0.05);
           font-family: 'Fira Code', monospace;
-          color: #64748b;
-          text-align: center;
+          font-size: 9px;
+          color: #475569;
+          display: flex;
+          justify-content: space-between;
+          background: rgba(255, 255, 255, 0.01);
         }
 
         /* ─── Footer ─── */
@@ -591,12 +629,12 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 24px 64px;
+          padding: 20px 48px;
           border-t: 1px solid rgba(255, 255, 255, 0.05);
-          background: rgba(3, 7, 18, 0.2);
+          background: rgba(5, 7, 15, 0.2);
           font-family: 'Fira Code', monospace;
-          font-size: 10px;
-          letter-spacing: 1px;
+          font-size: 9px;
+          letter-spacing: 1.5px;
           color: #475569;
           z-index: 10;
         }
@@ -610,18 +648,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           }
         }
 
-        /* Modal Keyframes */
-        @keyframes fade-in-modal {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @keyframes scale-in-modal {
-          from { transform: scale(0.95) translateY(10px); opacity: 0; }
-          to { transform: scale(1) translateY(0); opacity: 1; }
-        }
-
-        /* ─── General Animations ─── */
+        /* Keyframes */
         @keyframes pulse-dot {
           0%, 100% { transform: scale(1); opacity: 1; }
           50% { transform: scale(1.4); opacity: 0.6; }
@@ -634,7 +661,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         }
         @keyframes float {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-12px) rotate(1.5deg); }
+          50% { transform: translateY(-8px) rotate(1deg); }
         }
         @keyframes hand-breath {
           0%, 100% { transform: translateY(0px) scale(1); }
@@ -665,7 +692,7 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
               height: `${Math.random() * 2 + 1}px`,
               top: `${Math.random() * 80 + 10}%`,
               left: `${Math.random() * 80 + 10}%`,
-              opacity: Math.random() * 0.6 + 0.3,
+              opacity: Math.random() * 0.5 + 0.2,
               animation: `float-particle ${6 + Math.random() * 8}s linear infinite`,
               animationDelay: `${Math.random() * 4}s`
             }}
@@ -682,11 +709,13 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           </span>
         </div>
 
-        <nav className="nav-links">
-          <span className="nav-link">Control Center v1.1</span>
-          <span style={{ color: 'rgba(255,255,255,0.1)' }}>|</span>
-          <span className="nav-link" style={{ color: '#06b6d4' }}>AMD Instinct Node</span>
-        </nav>
+        <div className="header-status">
+          <span>HOST: localhost:5173</span>
+          <div className="status-pill">
+            <span className="amd-badge-dot" style={{ backgroundColor: '#4ade80', boxShadow: '0 0 8px #4ade80' }}></span>
+            <span>AMD Instinct Node Active</span>
+          </div>
+        </div>
       </header>
 
       {/* ─── Main Columns ─── */}
@@ -704,14 +733,25 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           </h1>
 
           <p className="hero-desc">
-            A comprehensive, vendor-neutral telecom management platform built to accelerate network diagnostics, correlation, and simulations. Real-time telemetry paired with zero-lag multi-agent pipelines.
+            A high-performance, vendor-neutral telecom management platform built to accelerate network diagnostics, correlation, and simulations. Real-time telemetry paired with zero-lag multi-agent pipelines.
           </p>
 
-          <div className="spec-grid">
-            <span className="spec-tag">ROCm™ v6.1</span>
-            <span className="spec-tag">Multi-Agent Consensus</span>
-            <span className="spec-tag">Digital Twin</span>
-            <span className="spec-tag spec-tag-accent">Fireworks AI Gateway</span>
+          {/* Dynamic Telemetry Log Console (Premium Look) */}
+          <div className="tech-console">
+            <div className="console-header">
+              <span>SYSTEM EVENT CONSOLE</span>
+              <span>STATE: ACTIVE</span>
+            </div>
+            {systemLogs.map((log, index) => (
+              <div key={index} className="console-log-row">
+                <span className="console-log-accent">&gt;&gt;</span> {log}
+              </div>
+            ))}
+            {systemLogs.length === 0 && (
+              <div className="console-log-row">
+                <span className="console-log-accent">&gt;&gt;</span> SYS: Listening for network events...
+              </div>
+            )}
           </div>
 
           <div className="btn-group">
@@ -736,110 +776,76 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
           {/* Interactive Floating Globe */}
           <div className="hologram-globe">
             <svg viewBox="0 0 100 100">
-              {/* Outer shell */}
               <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" strokeWidth="0.4" strokeDasharray="3 3" opacity="0.25" />
-              
-              {/* Latitudes */}
               <ellipse cx="50" cy="50" rx="48" ry="12" fill="none" stroke="currentColor" strokeWidth="0.4" />
               <ellipse cx="50" cy="50" rx="48" ry="28" fill="none" stroke="currentColor" strokeWidth="0.4" />
               <line x1="2" y1="50" x2="98" y2="50" stroke="currentColor" strokeWidth="0.4" />
-
-              {/* Longitudes */}
               <ellipse cx="50" cy="50" rx="12" ry="48" fill="none" stroke="currentColor" strokeWidth="0.4" />
               <ellipse cx="50" cy="50" rx="28" ry="48" fill="none" stroke="currentColor" strokeWidth="0.4" />
               <line x1="50" y1="2" x2="50" y2="98" stroke="currentColor" strokeWidth="0.4" />
 
-              {/* Hologram Nodes with dynamic hover states */}
-              <circle 
-                className="interactive-node" cx="28" cy="38" r="2.5" fill="#06b6d4" 
-                onMouseEnter={() => handleNodeHover('NODE_NORTH_CORE', 'HEALTHY', '28%', '38%')}
-                onMouseLeave={() => setHudActive(false)}
-              />
-              <circle 
-                className="interactive-node" cx="72" cy="38" r="2.5" fill="#3b82f6" 
-                onMouseEnter={() => handleNodeHover('NODE_SOUTH_AGG', 'HEALTHY', '72%', '38%')}
-                onMouseLeave={() => setHudActive(false)}
-              />
-              <circle 
-                className="interactive-node" cx="50" cy="22" r="2.5" fill="#818cf8" 
-                onMouseEnter={() => handleNodeHover('NODE_EAST_DC', 'ACTIVE', '50%', '22%')}
-                onMouseLeave={() => setHudActive(false)}
-              />
-              <circle 
-                className="interactive-node" cx="34" cy="62" r="2.5" fill="#a855f7" 
-                onMouseEnter={() => handleNodeHover('NODE_WEST_BORDER', 'HEALTHY', '34%', '62%')}
-                onMouseLeave={() => setHudActive(false)}
-              />
-              <circle 
-                className="interactive-node" cx="66" cy="62" r="2.5" fill="#ef4444" 
-                onMouseEnter={() => handleNodeHover('NODE_CORE_GATEWAY', 'ALERT', '66%', '62%')}
-                onMouseLeave={() => setHudActive(false)}
-              />
+              {/* Constellation Nodes */}
+              <circle cx="28" cy="38" r="2.5" fill="#06b6d4" />
+              <circle cx="72" cy="38" r="2.5" fill="#3b82f6" />
+              <circle cx="50" cy="22" r="2.5" fill="#818cf8" />
+              <circle cx="34" cy="62" r="2.5" fill="#a855f7" />
+              <circle cx="66" cy="62" r="2.5" fill="#06b6d4" />
               
-              {/* Mesh connectors */}
+              {/* Lines */}
               <line x1="28" y1="38" x2="50" y2="22" stroke="#06b6d4" strokeWidth="0.3" strokeDasharray="1 1" />
               <line x1="72" y1="38" x2="50" y2="22" stroke="#3b82f6" strokeWidth="0.3" strokeDasharray="1 1" />
               <line x1="34" y1="62" x2="50" y2="50" stroke="#818cf8" strokeWidth="0.3" />
-              <line x1="66" y1="62" x2="50" y2="50" stroke="#ef4444" strokeWidth="0.3" />
-              <line x1="28" y1="38" x2="34" y2="62" stroke="#a855f7" strokeWidth="0.3" strokeDasharray="1 1" />
+              <line x1="66" y1="62" x2="50" y2="50" stroke="#06b6d4" strokeWidth="0.3" />
             </svg>
           </div>
 
-          {/* Interactive Floating HUD panel */}
-          <div 
-            className="hud-panel" 
-            style={{ 
-              opacity: hudActive ? 1 : 0, 
-              left: hudCoord.x, 
-              top: hudCoord.y 
-            }}
-          >
-            <div className="hud-title">{hudNodeName}</div>
-            <div className="hud-item">
-              <span>STATUS:</span>
-              <span className="hud-item-val" style={{ color: hudStatus === 'ALERT' ? '#ef4444' : '#22c55e' }}>
-                {hudStatus}
-              </span>
+          {/* Floating Live Telemetry HUD */}
+          <div className="hud-telemetry-panel">
+            <div style={{ color: '#06b6d4', borderBottom: '1px solid rgba(6,182,212,0.15)', paddingBottom: '4px', marginBottom: '8px', fontWeight: 'bold' }}>
+              TEL_METRICS
             </div>
-            <div className="hud-item">
-              <span>PING:</span>
-              <span className="hud-item-val">{pingTime}ms</span>
+            <div className="hud-tel-row">
+              <span>LATENCY:</span>
+              <span className="hud-tel-val">{hudData.latency}</span>
             </div>
-            <div className="hud-item">
-              <span>LOSS:</span>
-              <span className="hud-item-val">{hudStatus === 'ALERT' ? '0.12%' : '0.00%'}</span>
+            <div className="hud-tel-row">
+              <span>PKT LOSS:</span>
+              <span className="hud-tel-val">{hudData.loss}</span>
+            </div>
+            <div className="hud-tel-row">
+              <span>JITTER:</span>
+              <span className="hud-tel-val">{hudData.jitter}</span>
+            </div>
+            <div className="hud-tel-row">
+              <span>CAPACITY:</span>
+              <span className="hud-tel-val">{hudData.throughput}</span>
             </div>
           </div>
 
           {/* Cybernetic Wireframe Hand */}
           <div className="cyber-hand">
             <svg viewBox="0 0 200 120">
-              {/* Wrist & Palm mesh grids */}
               <path d="M 60 120 L 140 120 L 150 90 L 50 90 Z" fill="none" stroke="currentColor" strokeWidth="0.6" />
               <path d="M 50 90 L 150 90 L 165 55 L 35 55 Z" fill="none" stroke="currentColor" strokeWidth="0.6" />
               
-              {/* Wrist joints */}
               <line x1="60" y1="120" x2="50" y2="90" stroke="currentColor" strokeWidth="0.4" />
               <line x1="80" y1="120" x2="75" y2="90" stroke="currentColor" strokeWidth="0.4" />
               <line x1="100" y1="120" x2="100" y2="90" stroke="currentColor" strokeWidth="0.4" />
               <line x1="120" y1="120" x2="125" y2="90" stroke="currentColor" strokeWidth="0.4" />
               <line x1="140" y1="120" x2="150" y2="90" stroke="currentColor" strokeWidth="0.4" />
 
-              {/* Palm lattices */}
               <line x1="50" y1="90" x2="35" y2="55" stroke="currentColor" strokeWidth="0.4" />
               <line x1="75" y1="90" x2="70" y2="55" stroke="currentColor" strokeWidth="0.4" />
               <line x1="100" y1="90" x2="100" y2="55" stroke="currentColor" strokeWidth="0.4" />
               <line x1="125" y1="90" x2="130" y2="55" stroke="currentColor" strokeWidth="0.4" />
               <line x1="150" y1="90" x2="165" y2="55" stroke="currentColor" strokeWidth="0.4" />
 
-              {/* Cyber fingers wireframes */}
               <path d="M 35 55 L 20 40 L 15 28 L 22 25 L 38 42 Z" fill="none" stroke="currentColor" strokeWidth="0.6" />
               <path d="M 45 55 L 45 25 L 47 10 L 53 10 L 55 25 L 55 55" fill="none" stroke="currentColor" strokeWidth="0.6" />
               <path d="M 75 55 L 77 20 L 79 5 L 87 5 L 89 20 L 85 55" fill="none" stroke="currentColor" strokeWidth="0.6" />
               <path d="M 115 55 L 113 22 L 115 8 L 123 8 L 125 22 L 125 55" fill="none" stroke="currentColor" strokeWidth="0.6" />
               <path d="M 145 55 L 149 32 L 153 20 L 159 20 L 161 32 L 155 55" fill="none" stroke="currentColor" strokeWidth="0.6" />
 
-              {/* Node tip points */}
               <circle cx="17" cy="26" r="2" fill="#06b6d4" />
               <circle cx="50" cy="9" r="2" fill="#06b6d4" />
               <circle cx="83" cy="4" r="2" fill="#06b6d4" />
@@ -850,68 +856,140 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
         </div>
       </main>
 
-      {/* ─── Architectural Walkthrough Overlay Modal ─── */}
+      {/* ─── Detailed Technical Walkthrough Modal ─── */}
       {showDocs && (
         <div className="walkthrough-overlay" onClick={() => setShowDocs(false)}>
           <div className="walkthrough-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-btn" onClick={() => setShowDocs(false)}>×</button>
-            
-            <h2 className="modal-title">TeleGenesis OS</h2>
-            <div className="modal-subtitle">Platform Architecture &amp; AMD Acceleration Guide</div>
-
-            <div className="modal-section">
-              <h3 className="modal-section-title">
-                <span>[01]</span> System Design &amp; Data Synchronization
-              </h3>
-              <p className="modal-body-txt">
-                TeleGenesis OS utilizes a decoupled, three-tier architecture that guarantees complete network status synchronization across the system:
-              </p>
-              <ul className="modal-list">
-                <li className="modal-list-item">
-                  <strong>Pluggable Connector Layer:</strong> Standardizes data structures for physical alarms, configurations, logs, and network telemetry.
-                </li>
-                <li className="modal-list-item">
-                  <strong>Atomic Telemetry Cache:</strong> Maintains a 15-second snapshot of all node metrics, ensuring that the Executive Dashboard and AI Operations Center show identical network states.
-                </li>
-              </ul>
+            <div className="modal-header">
+              <div className="modal-title-group">
+                <h2>TELETAC-OS WALKTHROUGH</h2>
+                <p>PLATFORM ARCHITECTURE &amp; HARDWARE ACCELERATION SCHEMATIC</p>
+              </div>
+              <button className="modal-close-btn" onClick={() => setShowDocs(false)}>×</button>
             </div>
 
-            <div className="modal-section">
-              <h3 className="modal-section-title">
-                <span>[02]</span> Parallel Agent Investigation
-              </h3>
-              <p className="modal-body-txt">
-                When a critical link or hardware incident is triggered, the system dispatches <strong>15 specialized domain agents</strong> concurrently to isolate the incident's root cause:
-              </p>
-              <ul className="modal-list">
-                <li className="modal-list-item">
-                  <strong>Performance &amp; Logs:</strong> Isolates latency spikes, throughput degradation, and router OSPF adjacency error signatures.
-                </li>
-                <li className="modal-list-item">
-                  <strong>Consensus &amp; Reporting:</strong> Compares conflicting domain reports, determines the correct root cause, and generates structured markdown RCA reports.
-                </li>
-              </ul>
+            <div className="modal-tabs">
+              <div 
+                className={`modal-tab ${selectedTab === 'architecture' ? 'active' : ''}`}
+                onClick={() => setSelectedTab('architecture')}
+              >
+                01. ARCHITECTURE
+              </div>
+              <div 
+                className={`modal-tab ${selectedTab === 'agents' ? 'active' : ''}`}
+                onClick={() => setSelectedTab('agents')}
+              >
+                02. MULTI-AGENT PANEL
+              </div>
+              <div 
+                className={`modal-tab ${selectedTab === 'amd' ? 'active' : ''}`}
+                onClick={() => setSelectedTab('amd')}
+              >
+                03. AMD HARDWARE
+              </div>
             </div>
 
-            <div className="modal-section">
-              <h3 className="modal-section-title">
-                <span>[03]</span> AMD Instinct™ MI300X Acceleration
-              </h3>
-              <p className="modal-body-txt">
-                Running 15 AI agent investigations in parallel requires high-performance, massive bandwidth hardware resources:
-              </p>
-              <ul className="modal-list">
-                <li className="modal-list-item">
-                  <strong>Fireworks AI Catalog:</strong> Routes all agent queries to Fireworks AI, running on clusters optimized with <strong>AMD Instinct™ MI300X accelerators</strong> and the <strong>AMD ROCm™</strong> stack.
-                </li>
-                <li className="modal-list-item">
-                  <strong>High Throughput:</strong> Harnesses 192GB HBM3 memory and 5.3 TB/s bandwidth to run all 15 agent prompts concurrently without queue lag or API latency.
-                </li>
-              </ul>
+            <div className="modal-content">
+              {selectedTab === 'architecture' && (
+                <div>
+                  <div className="content-section">
+                    <h4><span>//</span> PLUGGABLE TELEMETRY CONNECTOR</h4>
+                    <p className="content-p">
+                      TeleGenesis OS operates on a vendor-agnostic connector architecture. This separates live operational telemetry from the UI and AI agents:
+                    </p>
+                    <ul style={{ paddingLeft: '16px', color: '#94a3b8', fontSize: '13px', lineHeight: '1.6' }}>
+                      <li style={{ marginBottom: '8px' }}>
+                        <strong>BaseConnector:</strong> Defines unified abstract models for router interfaces, OSPF adjacency logs, topology configurations, and regional KPI feeds.
+                      </li>
+                      <li style={{ marginBottom: '8px' }}>
+                        <strong>MockTelecomConnector:</strong> Simulates a realistic telecom topology consisting of 27 nodes and 30 active high-capacity fiber links.
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div className="content-section">
+                    <h4><span>//</span> DIURNAL AND CASCADING FAILURE MODELING</h4>
+                    <p className="content-p">
+                      The simulated data represents realistic network behaviors. Network traffic follows a strict diurnal cycle peaking at noon, and system failures propagate realistically (e.g. CRC error bursts cause OSPF session drop -> routing flaps -> downstream congestions).
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {selectedTab === 'agents' && (
+                <div>
+                  <div className="content-section">
+                    <h4><span>//</span> 15-AGENT PARALLEL DIAGNOSTIC PANEL</h4>
+                    <p className="content-p">
+                      When a critical network alert triggers, the TeleGenesis Agent Engine dispatches 15 specialized agents concurrently rather than using a single chatbot:
+                    </p>
+
+                    <table className="tech-table">
+                      <thead>
+                        <tr>
+                          <th>PHASE</th>
+                          <th>AGENT NAME</th>
+                          <th>ROLE / OBJECTIVE</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Phase 1</td>
+                          <td>Performance Agent</td>
+                          <td>Scans physical KPIs, throughput rates, and packet loss trends.</td>
+                        </tr>
+                        <tr>
+                          <td>Phase 2</td>
+                          <td>Log Analysis Agent</td>
+                          <td>Scans router CLI log streams for OSPF adjacency reset codes.</td>
+                        </tr>
+                        <tr>
+                          <td>Phase 3</td>
+                          <td>Security Agent</td>
+                          <td>Evaluates for indicators of DDoS or unauthorized config modifications.</td>
+                        </tr>
+                        <tr>
+                          <td>Phase 4</td>
+                          <td>Consensus Agent</td>
+                          <td>Correlates all individual findings, resolves discrepancy conflicts, and states RCA.</td>
+                        </tr>
+                        <tr>
+                          <td>Phase 5</td>
+                          <td>Reporting Agent</td>
+                          <td>Compiles consensus conclusions into structured markdown audit reports.</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {selectedTab === 'amd' && (
+                <div>
+                  <div className="content-section">
+                    <h4><span>//</span> AMD INSTINCT™ MI300X GPU ACCELERATION</h4>
+                    <p className="content-p">
+                      TeleGenesis OS routes all agent inference calls to the Fireworks AI API. This infrastructure is fully optimized to run on top-tier hardware:
+                    </p>
+                    <ul style={{ paddingLeft: '16px', color: '#94a3b8', fontSize: '13px', lineHeight: '1.6' }}>
+                      <li style={{ marginBottom: '10px' }}>
+                        <strong>Massive HBM3 Memory:</strong> AMD Instinct MI300X features 192GB HBM3 memory and 5.3 TB/s bandwidth, allowing the backend to execute all 15 agents concurrently in a single hardware batch.
+                      </li>
+                      <li style={{ marginBottom: '10px' }}>
+                        <strong>ROCm Stack Optimizations:</strong> Utilizes FireAttention and ROCm software layers to reduce token generation latencies to single-digit milliseconds.
+                      </li>
+                      <li style={{ marginBottom: '10px' }}>
+                        <strong>Serverless Scalability:</strong> Delivers enterprise-tier, multi-agent AI execution directly via Fireworks serverless endpoints without requiring dedicated local GPU clusters.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="modal-footer">
-              END OF DOCUMENT // TeleGenesis OS Team
+              <span>DOC_ID: TG-OS-SPEC-V1.1</span>
+              <span>TELEGENESIS NETWORK OPERATIONS</span>
             </div>
           </div>
         </div>
