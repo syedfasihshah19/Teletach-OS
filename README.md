@@ -45,8 +45,16 @@ Orchestrator · Performance · Incident Investigation · Alarm Correlation · Lo
 |---|---|
 | **Frontend** | React, TypeScript, Tailwind CSS, React Flow, Recharts, Framer Motion |
 | **Backend** | FastAPI, Python, Pydantic |
-| **AI** | Fireworks AI (Llama 3.1 70B), Antigravity Orchestration Framework |
-| **Deployment** | AMD Cloud |
+| **AI Orchestration** | Antigravity Orchestration Framework (16 specialized agents) |
+| **AI Infrastructure** | **Fireworks AI API accelerated by AMD Instinct™ MI300X GPUs** |
+
+## ⚡ AMD Hardware Acceleration via Fireworks AI
+
+TeleGenesis OS does not run local LLM instances, nor does it require active hosting in the AMD Cloud. Instead, it utilizes **Fireworks AI**'s state-of-the-art serverless inference API.
+
+* **AMD Instinct™ MI300X Clusters**: Fireworks AI runs its high-performance LLM inference catalog in partnership with AMD, powered directly by **AMD Instinct MI300X GPU accelerators**.
+* **ROCm & FireAttention Optimizations**: Because Fireworks AI is optimized for the **AMD ROCm™** software stack, our agent queries benefit from ultra-low latency and high token throughput.
+* **Massive Concurrency**: When an incident is investigated, the Antigravity Orchestrator dispatches **15 specialized domain agents concurrently**. The massive HBM3 memory bandwidth (5.3 TB/s) of the MI300X allows Fireworks to process all 15 agent prompts in parallel without queue delays or latency penalties.
 
 ## 🚀 Quick Start
 
