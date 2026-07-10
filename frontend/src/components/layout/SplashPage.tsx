@@ -899,29 +899,6 @@ export default function SplashPage({ onEnter }: SplashPageProps) {
             <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-red-500/40 pointer-events-none" />
             <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-red-500/40 pointer-events-none" />
             <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-red-500/40 pointer-events-none" />
-
-            {/* Dynamic Telemetry HUD overlay inside card */}
-            <div className="hud-telemetry-panel">
-              <div style={{ color: '#06b6d4', borderBottom: '1px solid rgba(6,182,212,0.15)', paddingBottom: '4px', marginBottom: '8px', fontWeight: 'bold' }}>
-                TEL_METRICS
-              </div>
-              <div className="hud-tel-row">
-                <span>LATENCY:</span>
-                <span className="hud-tel-val">{hudData.latency}</span>
-              </div>
-              <div className="hud-tel-row">
-                <span>PKT LOSS:</span>
-                <span className="hud-tel-val">{hudData.loss}</span>
-              </div>
-              <div className="hud-tel-row">
-                <span>JITTER:</span>
-                <span className="hud-tel-val">{hudData.jitter}</span>
-              </div>
-              <div className="hud-tel-row">
-                <span>CAPACITY:</span>
-                <span className="hud-tel-val">{hudData.throughput}</span>
-              </div>
-            </div>
           </div>
         </div>
       </main>
