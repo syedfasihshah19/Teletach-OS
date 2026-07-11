@@ -12,7 +12,7 @@ from agents.base import BaseAgent
 class PerformanceAgent(BaseAgent):
     def __init__(self):
         super().__init__("Performance Agent", "performance",
-                        "Analyzes KPIs, detects anomalies, identifies degradation patterns")
+                        "Analyzes KPIs, detects anomalies, identifies degradation patterns", use_fast_model=True)
 
     async def analyze(self, context) -> dict:
         kpis = context.incident_data.get("all_kpis") or context.incident_data.get("kpis", [])
@@ -58,7 +58,7 @@ Return JSON: summary, root_cause, evidence (list of anomalous KPIs with values),
 class IncidentInvestigationAgent(BaseAgent):
     def __init__(self):
         super().__init__("Incident Investigation Agent", "incident_investigation",
-                        "Correlates alarms, symptoms, identifies probable root causes")
+                        "Correlates alarms, symptoms, identifies probable root causes", use_fast_model=True)
 
     async def analyze(self, context) -> dict:
         alarms = context.incident_data.get("alarms", [])
@@ -87,7 +87,7 @@ Return JSON with: summary, root_cause, evidence (list), impact, recommendations 
 class AlarmCorrelationAgent(BaseAgent):
     def __init__(self):
         super().__init__("Alarm Correlation Agent", "alarm_correlation",
-                        "Groups related alarms, identifies cascade patterns")
+                        "Groups related alarms, identifies cascade patterns", use_fast_model=True)
 
     async def analyze(self, context) -> dict:
         alarms = context.incident_data.get("alarms", [])
@@ -133,7 +133,7 @@ Identify: root alarm, cascade sequence, affected nodes. Return JSON: summary, ro
 class LogAnalysisAgent(BaseAgent):
     def __init__(self):
         super().__init__("Log Analysis Agent", "log_analysis",
-                        "Parses and summarizes logs, finds error patterns")
+                        "Parses and summarizes logs, finds error patterns", use_fast_model=True)
 
     async def analyze(self, context) -> dict:
         logs = context.incident_data.get("logs", [])
@@ -169,7 +169,7 @@ Identify: error patterns, state changes (UP/DOWN/INIT), repeated failures. Retur
 class ConfigurationAgent(BaseAgent):
     def __init__(self):
         super().__init__("Configuration Agent", "configuration",
-                        "Detects configuration drift, misconfigurations, change correlation")
+                        "Detects configuration drift, misconfigurations, change correlation", use_fast_model=True)
 
     async def analyze(self, context) -> dict:
         system = "You are a telecom network configuration analysis agent. Detect configuration drift, misconfigurations, and correlate recent changes with incidents."
@@ -192,7 +192,7 @@ Return JSON with: summary, root_cause, evidence (list), impact, recommendations 
 class SecurityAgent(BaseAgent):
     def __init__(self):
         super().__init__("Security Agent", "security",
-                        "Assesses security implications of incidents and changes")
+                        "Assesses security implications of incidents and changes", use_fast_model=True)
 
     async def analyze(self, context) -> dict:
         alarms = context.incident_data.get("alarms", [])
@@ -235,7 +235,7 @@ Return JSON: summary, root_cause (security threat if any), evidence (threat indi
 class CustomerExperienceAgent(BaseAgent):
     def __init__(self):
         super().__init__("Customer Experience Agent", "customer_experience",
-                        "Estimates QoE impact, affected subscriber count")
+                        "Estimates QoE impact, affected subscriber count", use_fast_model=True)
 
     async def analyze(self, context) -> dict:
         all_kpis = context.incident_data.get("all_kpis") or context.incident_data.get("kpis", [])
@@ -275,7 +275,7 @@ Return JSON: summary, root_cause, evidence (affected subscriber segments), impac
 class CostOptimizationAgent(BaseAgent):
     def __init__(self):
         super().__init__("Cost Optimization Agent", "cost_optimization",
-                        "Evaluates financial impact of incidents and recommendations")
+                        "Evaluates financial impact of incidents and recommendations", use_fast_model=True)
 
     async def analyze(self, context) -> dict:
         kpi_ctx = context.incident_data.get("network_context", "")
@@ -307,7 +307,7 @@ Return JSON: summary, root_cause, evidence (list with cost figures), impact (rev
 class EnergyOptimizationAgent(BaseAgent):
     def __init__(self):
         super().__init__("Energy Optimization Agent", "energy_optimization",
-                        "Analyzes power consumption, recommends efficiency improvements")
+                        "Analyzes power consumption, recommends efficiency improvements", use_fast_model=True)
 
     async def analyze(self, context) -> dict:
         kpi_ctx = context.incident_data.get("network_context", "")
@@ -340,7 +340,7 @@ Return JSON: summary, root_cause, evidence (list with power readings), impact (e
 class CapacityPlanningAgent(BaseAgent):
     def __init__(self):
         super().__init__("Capacity Planning Agent", "capacity_planning",
-                        "Forecasts growth, recommends infrastructure upgrades")
+                        "Forecasts growth, recommends infrastructure upgrades", use_fast_model=True)
 
     async def analyze(self, context) -> dict:
         kpi_ctx = context.incident_data.get("network_context", "")
@@ -376,7 +376,7 @@ Return JSON: summary, root_cause, evidence (list of congested links/KPIs), impac
 class TrafficEngineeringAgent(BaseAgent):
     def __init__(self):
         super().__init__("Traffic Engineering Agent", "traffic_engineering",
-                        "Analyzes traffic flows, detects bottlenecks, recommends rerouting")
+                        "Analyzes traffic flows, detects bottlenecks, recommends rerouting", use_fast_model=True)
 
     async def analyze(self, context) -> dict:
         flows = context.incident_data.get("traffic_flows", [])
@@ -432,7 +432,7 @@ class SimulationAgent(BaseAgent):
     """Digital Twin simulation: deterministic metrics + AI analysis."""
     def __init__(self):
         super().__init__("Simulation Agent", "simulation",
-                        "Drives Digital Twin scenarios with AI analysis")
+                        "Drives Digital Twin scenarios with AI analysis", use_fast_model=True)
 
     async def analyze(self, context) -> dict:
         """Deterministic simulation + Fireworks AI analysis of results."""
@@ -582,7 +582,7 @@ Return JSON with:
 class KnowledgeAgent(BaseAgent):
     def __init__(self):
         super().__init__("Knowledge Agent", "knowledge",
-                        "Retrieves historical incidents and pattern matching from Decision Memory")
+                        "Retrieves historical incidents and pattern matching from Decision Memory", use_fast_model=True)
 
     async def analyze(self, context) -> dict:
         # Pull real historical cases from Decision Memory DB

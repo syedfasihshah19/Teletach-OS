@@ -16,8 +16,8 @@ class Settings(BaseSettings):
     # Fireworks AI
     fireworks_api_key: str = ""
     fireworks_base_url: str = "https://api.fireworks.ai/inference/v1"
-    fireworks_model: str = "accounts/fireworks/models/deepseek-v4-pro"
-    fireworks_model_fast: str = "accounts/fireworks/models/glm-5p2"
+    fireworks_model: str = "accounts/fireworks/models/llama-v3p3-70b-instruct"
+    fireworks_model_fast: str = "accounts/fireworks/models/llama-v3p1-8b-instruct"
 
     class Config:
         env_file = ".env"
