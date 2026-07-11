@@ -13,12 +13,12 @@ logger = logging.getLogger("agents")
 
 STRUCTURED_PROMPT = (
     "CRITICAL: Return your analysis as valid JSON with these keys: "
-    "summary (2-3 sentences), root_cause (if applicable), evidence (list of strings), "
-    "impact (string describing impact), recommendations (list of action strings), "
-    "confidence (float 0-1), risk (string: low/medium/high with reason), "
-    "rollback (string: rollback plan if applicable). "
+    "summary (1 short sentence), root_cause (if applicable, max 10 words), evidence (list of max 2 short strings), "
+    "impact (1 short sentence), recommendations (list of max 2 short actions), "
+    "confidence (float 0-1), risk (string: low/medium/high), "
+    "rollback (string: rollback plan if applicable, max 10 words). "
     "Output ONLY the JSON object. No markdown fences. No explanation outside JSON. "
-    "DO NOT write 'The user wants', 'I need to', 'Let me'. "
+    "Keep all values extremely brief and concise. DO NOT generate verbose explanations. "
     "Start directly with the opening brace {. "
 )
 

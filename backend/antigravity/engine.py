@@ -220,8 +220,7 @@ INCIDENT_INVESTIGATION_WORKFLOW = Workflow(
     name="incident_investigation",
     description="Full multi-agent incident investigation workflow with RCA report generation",
     steps=[
-        WorkflowStep(agent_types=["performance", "alarm_correlation", "log_analysis", "security"], timeout_seconds=35),
-        WorkflowStep(agent_types=["customer_experience", "traffic_engineering", "knowledge"], timeout_seconds=35),
+        WorkflowStep(agent_types=["performance", "alarm_correlation", "log_analysis", "security", "customer_experience", "traffic_engineering", "knowledge"], timeout_seconds=35),
         WorkflowStep(agent_types=["consensus"], timeout_seconds=35),
         WorkflowStep(agent_types=["reporting"], timeout_seconds=35),
     ],
