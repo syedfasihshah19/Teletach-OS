@@ -98,7 +98,7 @@ class BaseAgent(ABC):
                         {"role": "user", "content": user_prompt},
                     ],
                     temperature=temperature,
-                    max_tokens=1200,
+                    max_tokens=2500,
                 )
                 text = response.choices[0].message.content or ""
                 text = self._clean(text)

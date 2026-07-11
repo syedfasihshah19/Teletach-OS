@@ -639,8 +639,8 @@ async def generate_optimizations(data: dict = {}):
         "topo_struct": topo_struct,
     }
 
-    # Semaphore: max 2 concurrent Fireworks calls to avoid rate-limit / timeout cascade
-    _sem = asyncio.Semaphore(2)
+    # Semaphore: max 5 concurrent Fireworks calls to avoid rate-limit / timeout cascade
+    _sem = asyncio.Semaphore(5)
 
     # Per-category fallback description used when AI analyze fails — enriched with live network context
     GEN_CAT_DESCRIPTIONS = {
@@ -675,39 +675,55 @@ async def generate_optimizations(data: dict = {}):
     }
 
     async def process_category(cat: str):
-        """Process a single optimization category — AI analyze + AI estimate, rate-limited."""
+        """Process a single optimization category — combined AI analysis and estimation in a single call."""
         agent = agent_map.get(cat)
         if not agent:
             return None
 
-        context = SharedContext(incident_data={
-            "title": f"Optimization analysis: {cat}",
-            "description": (
-                f"Generate {cat} optimization recommendations from current live network state. "
-                f"Focus on real, specific, quantitative improvements."
-            ),
-            "region": "All regions",
-            "affected_nodes": shared_context["topo_nodes"],
-            "kpis": shared_context["kpis_dump"],
-            "traffic_flows": shared_context["flow_structs"],
-            "congestion": shared_context["cong_structs"],
-            "topology": shared_context["topo_struct"],
-            "network_context": (
-                f"KPIs:\n{shared_context['kpi_text']}\n\n"
-                f"Congestion:\n{shared_context['congestion_text']}\n\n"
-                f"High-util links:\n{shared_context['link_text']}"
-            ),
-        })
+        lo, hi = DEFAULT_IMPROVEMENTS[cat]
+        fb = CAT_FALLBACKS.get(cat, {})
+
+        system = (
+            f"You are a telecom {cat} optimization specialist and analyst. "
+            "Analyze network metrics and traffic to generate specific optimizations. "
+            "You must return ONLY a valid JSON object. Do not include any explanations, thinking tags, or markdown code fences. "
+            "The response MUST start with '{'."
+        )
+
+        user = (
+            f"For this {cat} network optimization category, analyze the network state and generate an optimization plan with realistic quantitative estimates.\n\n"
+            f"Network KPIs:\n{shared_context['kpi_text']}\n\n"
+            f"Congestion:\n{shared_context['congestion_text']}\n\n"
+            f"High-util links:\n{shared_context['link_text']}\n\n"
+            f"Return ONLY a JSON object with EXACTLY these keys:\n"
+            f'{{\n'
+            f'  "title": "A specific 4-8 word title for this {cat} optimization",\n'
+            f'  "summary": "A detailed 2-3 sentence analysis of the issue and recommendation",\n'
+            f'  "recommendations": ["list of 3-4 specific recommended action strings"],\n'
+            f'  "impact": "A specific description of expected improvement",\n'
+            f'  "confidence": <float between 0.75 and 0.98>,\n'
+            f'  "risk": "low"|"medium"|"high",\n'
+            f'  "current_value": "The current status value (e.g. \'74.1%\' or \'4.8 kW/node\' or \'$0.18/GB\')",\n'
+            f'  "projected_value": "The projected value after optimization (e.g. \'91.8%\' or \'3.9 kW/node\' or \'$0.14/GB\')",\n'
+            f'  "improvement_pct": <float between {lo} and {hi}>,\n'
+            f'  "affected_customers": "e.g. \'350K subscribers\' or \'120 enterprise nodes\'",\n'
+            f'  "implementation_time": "e.g. \'5 hours\' or \'2 days\'",\n'
+            f'  "estimated_capex": "estimated capex cost (e.g. \'$55,000\' or \'$18,000\')",\n'
+            f'  "estimated_opex": "estimated opex cost (e.g. \'$2,100/month\' or \'-$1,200/month\')",\n'
+            f'  "downtime_hours": <float downtime in hours, e.g. 0.5 or 0.0>,\n'
+            f'  "payback_months": <int payback period, e.g. 12 or 6>\n'
+            f'}}'
+        )
 
         try:
-            # Rate-limited analyze call
+            # Make the single, combined API call
             async with _sem:
-                result = await agent.analyze(context)
-
-            finding = result.get("finding", "")
-            structured = result.get("structured", {})
-
-            # Detect AI fallback / failure — replace with rich category context
+                response, tokens = await agent.call_fireworks(system, user, temperature=0.2, use_structured_prompt=False)
+            
+            structured = agent.parse_structured(response)
+            
+            # Detect fallback / blank results
+            finding = structured.get("summary", "")
             is_fallback = (
                 not finding
                 or len(finding) < 30
@@ -717,20 +733,18 @@ async def generate_optimizations(data: dict = {}):
             )
             if is_fallback:
                 finding = GEN_CAT_DESCRIPTIONS.get(cat, CAT_DESCRIPTIONS.get(cat, f"{cat} network optimization recommended based on current KPIs."))
-                structured = {
-                    "summary": finding,
-                    "recommendations": [f"Optimize {cat} configuration", f"Review {cat} parameters", f"Monitor {cat} metrics"],
-                    "impact": f"Improved {cat} performance across all regions",
-                    "confidence": 0.72,
-                    "risk": "medium",
-                }
+                structured["summary"] = finding
+                structured["recommendations"] = [f"Optimize {cat} configuration", f"Review {cat} parameters", f"Monitor {cat} metrics"]
+                structured["impact"] = f"Improved {cat} performance across all regions"
+                structured["confidence"] = 0.72
+                structured["risk"] = "medium"
 
-            confidence = structured.get("confidence", result.get("confidence", 0.75))
-            if isinstance(confidence, str):
-                try: confidence = float(confidence)
-                except: confidence = 0.75
+            # Parse confidence
+            confidence = structured.get("confidence", 0.75)
+            try: confidence = float(confidence)
+            except: confidence = 0.75
 
-            # Risk level
+            # Parse risk_level
             ai_risk = structured.get("risk", "medium")
             risk_level = "medium"
             if isinstance(ai_risk, str):
@@ -739,45 +753,8 @@ async def generate_optimizations(data: dict = {}):
                         risk_level = lvl
                         break
 
-            lo, hi = DEFAULT_IMPROVEMENTS[cat]
-            fb = CAT_FALLBACKS.get(cat, {})
-
-            # Estimate call — rate-limited, use rich finding context
-            est_agent = agents.get("cost_optimization") or agent
-            est_system = (
-                "You are a telecom operations analyst. "
-                "Estimate realistic quantitative metrics for a network optimization. "
-                "Return ONLY a valid JSON object. No markdown. No explanation."
-            )
-            est_user = (
-                f"For this {cat} telecom network optimization:\n\n"
-                f"Optimization Details: {finding[:600]}\n\n"
-                f"Network KPIs:\n{shared_context['kpi_text'][:400]}\n\n"
-                f"Estimate realistic, specific quantitative metrics based on the network state and finding. "
-                f"Return ONLY a valid JSON object with EXACTLY these keys:\n"
-                f'{{\n'
-                f'  "title": "A specific 4-8 word title for this {cat} optimization",\n'
-                f'  "current_value": "The current status value (e.g. \'74.1%\' or \'4.8 kW/node\' or \'$0.18/GB\')",\n'
-                f'  "projected_value": "The projected value after optimization (e.g. \'91.8%\' or \'3.9 kW/node\' or \'$0.14/GB\')",\n'
-                f'  "improvement_pct": <float between {lo} and {hi}>,\n'
-                f'  "affected_customers": "e.g. \'350K subscribers\' or \'120 enterprise nodes\'",\n'
-                f'  "implementation_time": "e.g. \'5 hours\' or \'2 days\'",\n'
-                f'  "estimated_capex": "estimated capex cost (e.g. \'$55,000\' or \'$18,000\')",\n'
-                f'  "estimated_opex": "estimated opex cost (e.g. \'$2,100/month\' or \'-$1,200/month\')",\n'
-                f'  "downtime_hours": <float downtime in hours, e.g. 0.5 or 0.0>,\n'
-                f'  "payback_months": <int payback period, e.g. 12 or 6>\n'
-                f'}}'
-            )
-
-            try:
-                async with _sem:
-                    est_response, _ = await est_agent.call_fireworks(est_system, est_user, temperature=0.2, use_structured_prompt=False)
-                estimates = est_agent.parse_structured(est_response)
-            except Exception:
-                estimates = {}
-
             # Parse improvement_pct
-            raw_pct = estimates.get("improvement_pct", None)
+            raw_pct = structured.get("improvement_pct", None)
             if raw_pct is not None:
                 try:
                     improvement_pct = round(float(str(raw_pct).replace("%", "").strip()), 1)
@@ -788,20 +765,21 @@ async def generate_optimizations(data: dict = {}):
             else:
                 improvement_pct = round(random.uniform(lo, hi), 1)
 
-            # Sanitize all string values — GLM may return Chinese chars; always fall back to CAT_FALLBACKS
-            current_val  = _ascii_clean(str(estimates.get("current_value", "")),  fb.get("current", "—"))
-            projected_val= _ascii_clean(str(estimates.get("projected_value", "")),fb.get("projected", "—"))
-            raw_title    = _ascii_clean(str(estimates.get("title", "")), "")
-            opt_title    = raw_title if len(raw_title) >= 8 else f"AI-recommended {cat} optimization"
-            customers    = _ascii_clean(str(estimates.get("affected_customers", "")),  fb.get("customers", "—"))
-            impl_time    = _ascii_clean(str(estimates.get("implementation_time", "")), fb.get("impl", "—"))
-            capex        = _ascii_clean(str(estimates.get("estimated_capex", "")),     fb.get("capex", "—"))
-            opex         = _ascii_clean(str(estimates.get("estimated_opex", "")),      fb.get("opex", "—"))
-            raw_impact   = structured.get("impact", "") or ""
-            net_impact   = _ascii_clean(raw_impact[:300], f"Improved {cat} performance across all regions")
-            try:    downtime = float(estimates.get("downtime_hours", fb.get("downtime", 0)) or 0)
+            # Sanitize all values
+            current_val   = _ascii_clean(str(structured.get("current_value", "")),   fb.get("current", "—"))
+            projected_val = _ascii_clean(str(structured.get("projected_value", "")), fb.get("projected", "—"))
+            raw_title     = _ascii_clean(str(structured.get("title", "")), "")
+            opt_title     = raw_title if len(raw_title) >= 8 else f"AI-recommended {cat} optimization"
+            customers     = _ascii_clean(str(structured.get("affected_customers", "")),   fb.get("customers", "—"))
+            impl_time     = _ascii_clean(str(structured.get("implementation_time", "")),  fb.get("impl", "—"))
+            capex         = _ascii_clean(str(structured.get("estimated_capex", "")),      fb.get("capex", "—"))
+            opex          = _ascii_clean(str(structured.get("estimated_opex", "")),       fb.get("opex", "—"))
+            raw_impact    = structured.get("impact", "") or ""
+            net_impact    = _ascii_clean(raw_impact[:300], f"Improved {cat} performance across all regions")
+            
+            try:    downtime = float(structured.get("downtime_hours", fb.get("downtime", 0)) or 0)
             except: downtime = fb.get("downtime", 0)
-            try:    payback  = int(estimates.get("payback_months",  fb.get("payback", 0))  or 0)
+            try:    payback  = int(structured.get("payback_months",  fb.get("payback", 0))  or 0)
             except: payback  = fb.get("payback", 0)
 
             # Payback fallback if still 0
@@ -818,9 +796,6 @@ async def generate_optimizations(data: dict = {}):
                     "rank": i,
                     "title": alt_title,
                     "improvement_pct": round(improvement_pct * (0.65 if i == 2 else 0.38), 1),
-                    "risk_level": "low" if i == 2 else "minimal",
-                    "cost": "low" if i == 2 else "minimal",
-                    "reason": f"Alternative approach #{i}",
                 })
 
             opt_id = f"opt-{uuid.uuid4().hex[:8]}"
@@ -843,7 +818,7 @@ async def generate_optimizations(data: dict = {}):
                     projected_value=projected_val,
                     improvement_pct=improvement_pct,
                     confidence=confidence,
-                    evidence=result.get("evidence", []),
+                    evidence=[f"Analyzed metrics: {cat}"],
                     impact=impact,
                     risk_level=risk_level,
                     rollback_available=True,
@@ -865,7 +840,7 @@ async def generate_optimizations(data: dict = {}):
                 "current_value": current_val, "projected_value": projected_val,
                 "confidence": confidence, "risk_level": risk_level,
                 "alternatives": alternatives, "status": "proposed",
-                "impact": impact, "evidence": result.get("evidence", []),
+                "impact": impact, "evidence": [f"Analyzed metrics: {cat}"],
                 "rollback_available": True,
             }
 
