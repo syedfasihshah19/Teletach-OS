@@ -191,7 +191,7 @@ At the backend core of TeleGenesis OS lies **Antigravity** (`backend/antigravity
 
 ## 🐳 Docker Deployment & Reverse-Proxy Routing
 
-TeleGenesis OS is fully containerized for development and production environments using **Docker** and **Docker Compose**, providing a clean, single-command deployment.
+TeleGenesis OS is fully containerized and optimized for deployment on a single cloud VM instance (such as a single **AWS EC2 instance**) using **Docker** and **Docker Compose**, providing a clean, single-command deployment pipeline.
 
 ### 1. Dual-Container Architecture
 * **Frontend Container (`frontend/Dockerfile`)**: 
