@@ -185,7 +185,7 @@ To guarantee an execution time of **under 20 seconds** and optimize token costs,
 At the backend core of TeleGenesis OS lies **Antigravity** (`backend/antigravity/`), our custom async multi-agent orchestration framework.
 * **DAG-Based Workflow Steps**: Dispatches and tracks agents in parallel steps (e.g. concurrent sweeps, consensus consolidation, and markdown reporting).
 * **Thread-Safe Shared Context**: Leverages an async context lock enabling real-time inter-agent messaging and state synchronization.
-* **Multi-LLM & Anthropic Claude Support**: Features model-agnostic client interfaces that allow seamless routing of complex reasoning and reporting tasks to **Anthropic Claude** (e.g. Claude 3.5 Sonnet), alongside your high-concurrency Fireworks AI clusters.
+* **Multi-LLM, Anthropic Claude, & Google Gemini Support**: Features model-agnostic client interfaces that allow seamless routing of complex reasoning and reporting tasks to **Anthropic Claude** (e.g. Claude 3.5 Sonnet) or **Google Gemini** (e.g. Gemini 3.5 Flash and Gemini AI models) for production scaling, alongside your high-concurrency Fireworks AI clusters.
 
 ---
 
