@@ -84,13 +84,13 @@ Each agent is a modular prompt specialist operating within a parallel workflow p
 While the FastAPI backend and React frontend are hosted locally during this demonstration, **every single AI agent request is accelerated by AMD hardware**.
 
 ### The Fireworks AI and AMD Connection
-TeleGenesis OS routes all agent inference calls to the **Fireworks AI API**, using the ultra-fast and highly accurate **DeepSeek-V3** (primary reasoning model) and **GLM 5.2 / glm-5p2** (fast agent model) as configured in the `.env` file. 
+TeleGenesis OS routes all agent inference calls to the **Fireworks AI API**, using the ultra-fast and highly accurate **DeepSeek-V4-Pro** (primary reasoning model) and **GLM 5.2 / glm-5p2** (fast agent model) as configured in the `.env` file. 
 
 Fireworks AI runs their advanced, ultra-low-latency inference engines in partnership with AMD, powering their entire model catalog (including DeepSeek, GLM, and Llama models) directly on **AMD Instinct™ MI300X GPU accelerators**.
 
 ```
 [TeleGenesis Agents] 
-       │ (15 parallel API calls for GLM 5.2 / DeepSeek-V3)
+       │ (15 parallel API calls for GLM 5.2 / DeepSeek-V4-Pro)
        ▼
 [Fireworks AI API Gateway]
        │

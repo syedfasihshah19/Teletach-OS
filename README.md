@@ -169,7 +169,7 @@ TeleGenesis OS leverages **Fireworks AI**'s state-of-the-art serverless inferenc
 TeleGenesis OS employs a hybrid, multi-agent orchestrator managing fifteen specialized domain analysts. The system coordinates reasoning using a dual-model topology:
 
 ### 1. Dual-Model Topology
-* **Primary Reasoning Model (`DeepSeek-V3` / `DeepSeek-R1`)**: Deployed for deep logical analysis, consensus building, and synthesis. It processes the synthesized findings of all individual agents to generate a unified, evidence-backed root cause statement.
+* **Primary Reasoning Model (`DeepSeek V4 Pro`)**: Deployed for deep logical analysis, consensus building, and synthesis. It processes the synthesized findings of all individual agents to generate a unified, evidence-backed root cause statement.
 * **Fast Diagnostic Model (`GLM 5 Pro 2`)**: Used for high-concurrency, fast-path parallel agent queries. It runs the initial diagnostic checks (Performance, Log Analysis, Traffic Engineering) simultaneously to collect distributed findings.
 
 ### 2. Hybrid Pipeline & Deterministic Python Fast-Paths
