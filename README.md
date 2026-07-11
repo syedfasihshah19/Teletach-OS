@@ -181,6 +181,12 @@ To guarantee an execution time of **under 20 seconds** and optimize token costs,
   * **Customer Experience Agent**: Executes a telemetry-driven mathematical heuristic to calculate subscriber impact and call drop rates in **0ms** based on affected node topology.
   * **Reporting Agent**: Formats the final RCA report into structured markdown directly from the consensus state, avoiding a costly sequential LLM re-rendering call.
 
+### 3. Antigravity Multi-Agent Orchestration Framework
+At the backend core of TeleGenesis OS lies **Antigravity** (`backend/antigravity/`), our custom async multi-agent orchestration framework.
+* **DAG-Based Workflow Steps**: Dispatches and tracks agents in parallel steps (e.g. concurrent sweeps, consensus consolidation, and markdown reporting).
+* **Thread-Safe Shared Context**: Leverages an async context lock enabling real-time inter-agent messaging and state synchronization.
+* **Multi-LLM & Anthropic Claude Support**: Features model-agnostic client interfaces that allow seamless routing of complex reasoning and reporting tasks to **Anthropic Claude** (e.g. Claude 3.5 Sonnet), alongside your high-concurrency Fireworks AI clusters.
+
 ---
 
 ## 🐳 Docker Deployment & Reverse-Proxy Routing
