@@ -142,14 +142,14 @@ If you prefer to run the frontend and backend manually for development:
 | **Optimization Studio** | AI-powered routing, capacity, bandwidth, energy, cost optimization |
 | **Traffic Intelligence** | Traffic flow analysis, congestion detection, bandwidth optimization |
 | **Network Topology** | Interactive React Flow graph with live utilization |
-| **Agent Activity** | Timeline of all 16 AI agent actions with token tracking |
+| **Agent Activity** | Timeline of all 15 specialized AI agent actions with token tracking |
 | **Reports** | Auto-generated RCA, executive summaries, capacity plans |
 
-## 🤖 AI Agents (16 Fully Implemented)
+## 🤖 AI Agents (15 Specialized Agents)
 
-All agents use **Fireworks AI** for reasoning — zero stubs:
+All agents use **Fireworks AI** for reasoning — zero stubs, orchestrated by the central **Agent Engine**:
 
-`Agent Engine` · `Performance` · `Incident Investigation` · `Alarm Correlation` · `Log Analysis` · `Configuration` · `Security` · `Customer Experience` · `Cost Optimization` · `Energy Optimization` · `Capacity Planning` · `Traffic Engineering` · `Simulation` · `Knowledge` · `Consensus` · `Reporting`
+`Performance` · `Incident Investigation` · `Alarm Correlation` · `Log Analysis` · `Configuration` · `Security` · `Customer Experience` · `Cost Optimization` · `Energy Optimization` · `Capacity Planning` · `Traffic Engineering` · `Simulation` · `Knowledge` · `Consensus` · `Reporting`
 
 ---
 
