@@ -65,3 +65,6 @@ Thumbs.db
 *.sw?
 *.bak
 *.tmp
+
+# Demo Scripts & Voiceovers
+demo_script.md
