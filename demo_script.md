@@ -1,6 +1,19 @@
 # TeleGenesis OS — Official 3-4 Minute Voiceover Script & Demo Guide
 
-This artifact contains the official, continuous voiceover script designed for a **3-4 minute presentation or video demo** of **TeleGenesis OS**. You can copy-paste the text under the **Voiceover Script** section directly into an AI voice generator (like ElevenLabs) or read it live.
+This artifact contains the official, continuous voiceover script designed for a **3-4 minute presentation or video demo** of **TeleGenesis OS**. You can copy-paste the text under the **Voiceover Script** sections directly into an AI voice generator (like ElevenLabs) or read it live.
+
+---
+
+## 🎥 Part 0: Standalone Video Introduction (approx. 30-45 seconds)
+
+### Copy-Paste Intro Voiceover Text:
+"Welcome to the official presentation of TeleGenesis OS, an autonomous network operations platform. Built for the AMD Developer Hackathon by RedLine Devs—founded by Syed Fasih Shah, Syed Jawad Ali, and Syeda Sehrish Fatima—TeleGenesis OS is designed to revolutionize how modern telecommunication networks are managed. 
+
+When network outages strike, engineers spend hours manually digging through fragmented logs and alarms. TeleGenesis OS replaces this manual workflow with fifteen specialized AI agents executing in parallel, pinpointing root causes and generating safety-tested remediations in under twenty seconds. Let’s jump into the demo."
+
+### Visual Actions for Intro:
+* **0:00 - 0:15**: Show the clean, premium landing page, highlighting the team name **RedLine Devs** and the three founders: **Syed Fasih Shah**, **Syed Jawad Ali**, and **Syeda Sehrish Fatima**.
+* **0:15 - 0:35**: Scroll down to showcase the high-level architecture diagram or the overview of the 15 specialized agents.
 
 ---
 
