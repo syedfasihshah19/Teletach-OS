@@ -16,7 +16,7 @@ export default function Settings() {
         </div>
         {[
           { label: 'Fireworks AI API Key', value: 'fw_Hui1...fL', type: 'key' },
-          { label: 'Primary Model', value: 'DeepSeek V4 Pro (deepseek-v4-pro)', type: 'text' },
+          { label: 'Primary Model', value: 'DeepSeek V3 (deepseek-v3)', type: 'text' },
           { label: 'Fast Model', value: 'GLM 5 Pro 2 (glm-5p2)', type: 'text' },
           { label: 'Base URL', value: 'https://api.fireworks.ai/inference/v1', type: 'text' },
         ].map(f => (

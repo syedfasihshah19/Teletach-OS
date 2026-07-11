@@ -11,7 +11,7 @@ services:
       - APP_ENV=production
       - FIREWORKS_API_KEY=${FIREWORKS_API_KEY}
       - FIREWORKS_BASE_URL=${FIREWORKS_BASE_URL:-https://api.fireworks.ai/inference/v1}
-      - FIREWORKS_MODEL=${FIREWORKS_MODEL:-accounts/fireworks/models/deepseek-v4-pro}
+      - FIREWORKS_MODEL=${FIREWORKS_MODEL:-accounts/fireworks/models/deepseek-v3}
       - FIREWORKS_MODEL_FAST=${FIREWORKS_MODEL_FAST:-accounts/fireworks/models/glm-5p2}
       - CORS_ORIGINS=http://localhost,http://127.0.0.1,http://localhost:80,http://localhost:5173
     volumes:
