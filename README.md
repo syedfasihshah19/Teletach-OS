@@ -224,7 +224,7 @@ Nginx acts as the single entry point for all client requests, eliminating CORS i
 │   ├── nginx.conf     # Nginx config for reverse-proxying API calls
 │   └── Dockerfile     # Frontend Docker build script
 ├── backend/
-│   ├── agents/           # 16 AI agents with Fireworks AI
+│   ├── agents/           # 15 AI agents with Fireworks AI
 │   ├── antigravity/      # Multi-agent orchestration framework
 │   ├── api/routes/       # FastAPI endpoints
 │   ├── connectors/       # Data source connectors (mock → real)
@@ -235,6 +235,22 @@ Nginx acts as the single entry point for all client requests, eliminating CORS i
 ├── .env.example          # Template environment variable configurations
 └── docs/                 # Product documentation
 ```
+
+## 🔍 Key Source Files & Main Code Paths
+
+To make evaluation easy, here are the main implementation files for the core platform logic:
+
+* **Proprietary AI Orchestrator**: `backend/antigravity/engine.py` — Holds the core `AntigravityEngine` class that manages parallel agent lifecycles, execution steps, and thread-safe shared contexts.
+* **Specialized Agent Logic**: `backend/agents/all_agents.py` — Prompts, analysis routines, and consensus synthesis models for all 15 agents.
+* **Base Agent Architecture**: `backend/agents/base.py` — Implements `BaseAgent`, token counting, and the low-level Fireworks AI completion API client wrappers.
+* **Telemetry Data Connector**: `backend/connectors/mock.py` — Models diurnal telemetry loops, network topological graphs, cascading faults, and raw syslogs.
+* **Web Entry Point & Router**: `backend/main.py` — Configures the FastAPI router, sets up CORS filters, database sessions, and orchestrates live WebSocket streaming threads.
+* **Main Frontend Dashboards (`frontend/src/pages/`)**:
+  * `Dashboard.tsx` — Real-time NOC telemetry indicators and alert streaming overlays.
+  * `TeleTACWarRoom.tsx` — Dynamic incident investigation UI with multi-agent progress logging and RCA report previews.
+  * `OptimizationStudio.tsx` — Operational control hub rendering AI optimization recommendations with interactive approve/reject options.
+  * `DigitalTwin.tsx` — Visual validation module presenting side-by-side metric charts for planned routing, capacity, or load-shedding simulations.
+
 
 ## 👥 Team
 
